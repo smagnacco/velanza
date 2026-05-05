@@ -1,0 +1,33 @@
+{
+  "name": "@velanza/backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun run --watch src/index.ts",
+    "start": "bun run src/index.ts",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src tests --ext .ts",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "bun run src/db/migrate.ts"
+  },
+  "dependencies": {
+    "@velanza/shared": "workspace:*",
+    "hono": "^4.5.11",
+    "drizzle-orm": "^0.33.0",
+    "zod": "^3.23.8",
+    "@anthropic-ai/sdk": "^0.27.3",
+    "openai": "^4.63.0",
+    "@google/generative-ai": "^0.19.0",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "@types/uuid": "^10.0.0",
+    "drizzle-kit": "^0.24.2",
+    "typescript": "^5.5.4",
+    "eslint": "^9.11.1",
+    "@typescript-eslint/eslint-plugin": "^8.7.0",
+    "@typescript-eslint/parser": "^8.7.0"
+  }
+}

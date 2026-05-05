@@ -1,0 +1,53 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Environment — NEVER commit these
+.env
+.env.local
+.env.*.local
+
+# Database — NEVER commit these
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+~/.velanza/
+
+# Build output
+dist/
+build/
+.svelte-kit/
+.vite/
+
+# Bun
+bun.lockb
+*.lock
+
+# Drizzle generated migrations (keep the folder, ignore generated output)
+apps/backend/src/db/migrations/*.sql
+!apps/backend/src/db/migrations/.gitkeep
+
+# Coverage
+coverage/
+lcov.info
+*.lcov
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# Playwright
+playwright-report/
+test-results/

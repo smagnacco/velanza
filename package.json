@@ -1,0 +1,34 @@
+{
+  "name": "velanza",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/backend",
+    "apps/frontend",
+    "packages/shared"
+  ],
+  "scripts": {
+    "dev": "bun run --filter './apps/*' dev",
+    "build": "bun run --filter './apps/*' build",
+    "test": "bun run --filter '*' test",
+    "test:backend": "bun run --filter './apps/backend' test",
+    "test:frontend": "bun run --filter './apps/frontend' test",
+    "lint": "bun run --filter '*' lint",
+    "format": "prettier --write \"**/*.{ts,tsx,svelte,json,md}\" --ignore-path .gitignore",
+    "typecheck": "bun run --filter '*' typecheck",
+    "db:generate": "bun run --filter './apps/backend' db:generate",
+    "db:migrate": "bun run --filter './apps/backend' db:migrate",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3",
+    "prettier-plugin-svelte": "^3.2.6",
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,svelte,json,md}": [
+      "prettier --write"
+    ]
+  }
+}
