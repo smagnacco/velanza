@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bun --version)",
+      "Bash(bun install *)",
+      "Bash(ANTHROPIC_API_KEY=sk-ant-test-placeholder DB_PATH=/tmp/velanza-test.db bun run *)",
+      "Bash(ANTHROPIC_API_KEY=sk-ant-test-placeholder bun test *)",
+      "Bash(ANTHROPIC_API_KEY=sk-ant-test-placeholder DB_PATH=/tmp/velanza-test-123.db bun /home/smagnacco/workspaces/velanza/apps/backend/src/db/client.ts)",
+      "Bash(ANTHROPIC_API_KEY=sk-ant-test-placeholder DB_PATH=/tmp/velanza-test-diag.db bun *)",
+      "Bash(git *)"
+    ]
+  }
+}
