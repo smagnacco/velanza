@@ -4,6 +4,11 @@ import { secureHeaders } from 'hono/secure-headers';
 import { env } from './env.js';
 import { logger } from './lib/logger.js';
 import { healthRouter } from './routes/health.js';
+import { providersRouter } from './routes/providers.js';
+import { experimentsRouter } from './routes/experiments.js';
+import { conceptsRouter } from './routes/concepts.js';
+import { exportsRouter } from './routes/exports.js';
+import { xPublisherRouter } from './routes/x-publisher.js';
 
 const app = new Hono();
 
@@ -20,6 +25,11 @@ app.use(
 app.use('*', secureHeaders());
 
 app.route('/api/health', healthRouter);
+app.route('/api/providers', providersRouter);
+app.route('/api/experiments', experimentsRouter);
+app.route('/api/concepts', conceptsRouter);
+app.route('/api/exports', exportsRouter);
+app.route('/api/x-publisher', xPublisherRouter);
 
 app.notFound((c) => c.json({ error: 'Not found' }, 404));
 

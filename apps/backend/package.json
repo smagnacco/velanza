@@ -15,6 +15,7 @@
   "dependencies": {
     "@velanza/shared": "workspace:*",
     "hono": "^4.5.11",
+    "@hono/zod-validator": "^0.4.1",
     "drizzle-orm": "^0.33.0",
     "zod": "^3.23.8",
     "@anthropic-ai/sdk": "^0.27.3",

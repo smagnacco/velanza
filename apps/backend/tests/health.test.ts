@@ -7,6 +7,7 @@ process.env['DB_PATH'] = join(tmpdir(), `velanza-test-${Date.now()}.db`);
 
 import { healthRouter } from '../src/routes/health.js';
 import { resetDb } from '../src/db/client.js';
+import { setupTestDb } from '../src/db/setup-test.js';
 
 describe('GET /api/health', () => {
   const app = new Hono();
@@ -14,6 +15,7 @@ describe('GET /api/health', () => {
 
   beforeAll(() => {
     resetDb();
+    setupTestDb();
   });
 
   it('returns 200 with status ok when DB is reachable', async () => {
