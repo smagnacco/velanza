@@ -2,9 +2,7 @@
 
 > _velanza, n._ — Estado en que un pensamiento propio existe sin forma ni palabras hasta que alguien más lo pronuncia y lo revela. La palabra ajena no crea el pensamiento, lo descubre.
 
-Sistema multi-agente para generar neologismos que llenen huecos conceptuales en lenguajes humanos. Dos o más instancias de modelos de lenguaje dialogan adversarialmente — una propone, otra critica, otra verifica — hasta producir vocabulario que nombra experiencias reales que el lenguaje existente no captura.
-
-El proyecto lleva el nombre de una de sus primeras creaciones: _velanza_ fue uno de los conceptos generados en la fase prototipo, durante un diálogo entre dos instancias de Claude. Ningún humano lo escribió.
+Sistema multi-agente que hace dialogar instancias de LLMs de forma adversarial para generar neologismos que llenen huecos conceptuales en el lenguaje humano.
 
 🇬🇧 _English version: [README.en.md](./README.en.md)_
 
@@ -12,53 +10,44 @@ El proyecto lleva el nombre de una de sus primeras creaciones: _velanza_ fue uno
 
 ## ⚠️ Antes de empezar
 
-Esto es importante. Leélo antes de instalar.
-
 - **Las API keys son tuyas.** Velanza no provee acceso a ningún modelo. Necesitás cuenta propia en al menos uno de: Anthropic, OpenAI, Google.
-- **Los costos los pagás vos.** Un experimento default (3 dominios × 2 corridas) consume aproximadamente **1 USD** en llamadas a la API. Ejecutar las tres etapas completas con todos los dominios puede costar **5-10 USD**. El sistema muestra el costo estimado antes de cada corrida.
-- **Cada instalación es independiente.** Velanza es una aplicación local single-user. No hay servidor compartido. No hay datos compartidos. Lo que generes en tu máquina vive solo en tu máquina, salvo que decidas exportarlo o publicarlo.
-- **Nunca commitees `.env` ni los archivos de base de datos.** El `.gitignore` los cubre, pero verificá antes de cada push.
+- **Los costos los pagás vos.** Un experimento default (3 dominios × 2 corridas) consume aproximadamente **1 USD** en llamadas a la API. Ejecutar las tres etapas completas puede costar **5–10 USD**.
+- **Cada instalación es independiente.** No hay servidor compartido, no hay datos compartidos. Lo que generés vive solo en tu máquina.
+- **Nunca commitees `.env` ni archivos `.db`.** El `.gitignore` los cubre, pero verificá antes de cada push.
 
 ---
 
 ## Qué hace
 
-Velanza ejecuta tres etapas crecientes de experimentos sobre la capacidad de sistemas multi-agente LLM para producir lenguaje no cubierto por el vocabulario humano existente.
+Velanza ejecuta tres etapas de experimentos sobre la capacidad de sistemas multi-agente LLM para producir lenguaje no cubierto por el vocabulario humano existente.
+
+```
+Exploradora ──propone──▶ Crítica ──evalúa──▶ Exploradora ──refina──▶
+    Crítica ──veredicto──▶ Verificadora ──chequea otras lenguas──▶
+        Validación humana ──▶ Análisis + Export
+```
 
 ### Etapa 1 — Lexicalización Whorfiana
 
 **Pregunta:** ¿Pueden dos IAs en diálogo adversarial generar neologismos que llenen huecos lexicales reales en español/inglés?
 
-**Mecanismo:** Una agente Exploradora propone conceptos en un dominio dado. Una agente Crítica los evalúa rigurosamente. Una agente Verificadora chequea si el concepto ya existe en otras lenguas. Lo que sobrevive pasa a validación humana.
+Una Exploradora propone conceptos en un dominio dado. Una Crítica los evalúa rigurosamente. Una Verificadora chequea si ya existen en otras lenguas. Lo que sobrevive pasa a validación humana y produce una métrica de _hueco genuino_: reconocido por el usuario + sin equivalente en español + sin equivalente en otras lenguas.
 
-**Output:** lista de neologismos con definición, etimología, y métrica de "hueco genuino" = (reconocido por humano + sin equivalente en español + sin equivalente en otras lenguas conocidas).
-
-### Etapa 2 — Machine-only Concept Probing
+### Etapa 2 — Machine-only Concept Probing _(próximamente)_
 
 **Pregunta:** ¿Tienen los modelos categorías conceptuales internas que no mapean a lenguaje humano?
 
-**Mecanismo:** Adaptación API-only del trabajo de [Hewitt et al. (2025)](https://arxiv.org/abs/2510.08506). Un agente identifica conceptos que "usa internamente" sin nombre humano preciso. Otro agente intenta encontrar la mejor traducción humana posible. Los conceptos cuya traducción no produce comportamiento equivalente sobreviven como candidatos a _machine-only synonyms_.
+Adaptación API-only del trabajo de [Hewitt et al. (2025)](https://arxiv.org/abs/2510.08506). Probing por prompts en lugar de training de embeddings — el resultado es sugestivo, no probatorio.
 
-**Output:** neologismos con efecto conductual medido en plug-in evaluation (qué cambia cuando aparecen en un prompt vs cuando aparece su traducción humana).
+### Etapa 3 — Protocol Emergence _(próximamente)_
 
-### Etapa 3 — Protocol Emergence
-
-**Pregunta:** Bajo presión de eficiencia, ¿pueden dos agentes desarrollar un protocolo de comunicación propio que vaya más allá del lenguaje natural?
-
-**Mecanismo:** Dos agentes resuelven una tarea de transmisión de información con presupuesto de tokens decreciente por generación. Pueden inventar notación, símbolos, estructura. Tras N generaciones, un Translator traduce el protocolo final a lenguaje humano para análisis.
-
-**Output:** evolución del protocolo por generación + análisis de qué estructuras emergieron y qué se pierde en la traducción.
+**Pregunta:** Bajo presión de tokens decrecientes, ¿pueden dos agentes desarrollar un protocolo de comunicación propio más allá del lenguaje natural?
 
 ---
 
 ## Quick start
 
-### Prerequisitos
-
-- [Bun](https://bun.sh) >= 1.1
-- API key de al menos uno de: Anthropic, OpenAI, Google
-
-### Instalación
+**Prerequisitos:** [Bun](https://bun.sh) >= 1.1 · API key de Anthropic, OpenAI, o Google
 
 ```bash
 git clone https://github.com/<tu-usuario>/velanza.git
@@ -69,35 +58,19 @@ cp .env.example .env
 bun dev
 ```
 
-Abrí `http://localhost:5173` en el navegador. El backend levanta en `localhost:3000`, accesible solo desde tu máquina.
+Abrí `http://localhost:5173`. El backend levanta en `localhost:3000`, accesible solo desde tu máquina.
 
 ### Primera corrida
 
-1. Andá a **Configurar**.
-2. Seleccioná 1-3 dominios experienciales para empezar.
-3. Dejá el default de 2 corridas por dominio.
-4. Asignale Claude Sonnet a los tres roles (Exploradora, Crítica, Verificadora) o mezclá proveedores si querés.
-5. Iniciá. Ver el progreso en vivo en la pestaña **Ejecutar**.
-6. Cuando termine, validá los conceptos en **Validar**.
-7. Mirá las métricas en **Analizar**, exportá a JSON/CSV si querés análisis externo.
-
----
-
-## Stack
-
-- **Frontend:** Svelte 5 + Vite + TypeScript
-- **Runtime:** Bun
-- **Backend:** Hono
-- **DB:** SQLite + Drizzle ORM
-- **Validación:** Zod
-- **i18n:** typesafe-i18n (español + inglés)
-- **Testing:** Bun test (backend) + Vitest + Playwright (frontend)
+1. **Nuevo experimento** — elegí 1–3 dominios y 2 corridas por dominio para empezar.
+2. Asigná Claude Sonnet a los tres roles (Exploradora, Crítica, Verificadora) o mezclá proveedores.
+3. Iniciá — el progreso aparece en vivo a medida que los agentes dialogan.
+4. Cuando termine, **Validar** — 4 preguntas estructuradas por concepto.
+5. **Analizar** — métricas de huecos genuinos, exportación JSON/CSV.
 
 ---
 
 ## Configuración
-
-Toda la configuración vive en `.env`. Ver `.env.example` para el template completo.
 
 ```env
 # Al menos una key es requerida
@@ -105,20 +78,33 @@ ANTHROPIC_API_KEY=sk-ant-...
 OPENAI_API_KEY=sk-...
 GOOGLE_API_KEY=...
 
-# Server (defaults razonables)
+# Server
 PORT=3000
 HOST=127.0.0.1
 DB_PATH=~/.velanza/data.db
 
-# Override de modelos default si querés
+# Modelos default (opcionales)
 ANTHROPIC_DEFAULT_MODEL=claude-sonnet-4-6
-OPENAI_DEFAULT_MODEL=gpt-5.2
-GOOGLE_DEFAULT_MODEL=gemini-3-pro
+OPENAI_DEFAULT_MODEL=gpt-4o
+GOOGLE_DEFAULT_MODEL=gemini-2.5-flash
 
 LOG_LEVEL=info
 ```
 
-El backend valida estas variables al arrancar y falla rápido si falta algo crítico. Los logs nunca incluyen valores que matcheen patrones de API key.
+El backend valida todo al arrancar y falla rápido si falta algo crítico. Los logs nunca incluyen valores que matcheen patrones de API key.
+
+---
+
+## Stack
+
+| Capa          | Tecnología                             |
+| ------------- | -------------------------------------- |
+| Frontend      | Svelte 5 + Vite + TypeScript           |
+| Backend       | Bun + Hono                             |
+| Base de datos | SQLite (`bun:sqlite`) + Drizzle ORM    |
+| Validación    | Zod                                    |
+| i18n          | Archivos `es.ts` / `en.ts` nativos     |
+| Testing       | Bun test (backend) + Vitest (frontend) |
 
 ---
 
@@ -141,7 +127,7 @@ Editá `apps/backend/src/experiments/stage1/domains.ts`:
 
 ### Agregar un proveedor LLM
 
-Implementá la interfaz `LLMProvider` en `apps/backend/src/providers/`:
+Implementá `LLMProvider` en `apps/backend/src/providers/` y registralo en `registry.ts`:
 
 ```typescript
 export const myProvider: LLMProvider = {
@@ -153,50 +139,41 @@ export const myProvider: LLMProvider = {
 };
 ```
 
-Registralo en `providers/registry.ts` y agregá la API key correspondiente al schema de `env.ts`.
-
 ### Customizar prompts
 
-Los prompts viven en `apps/backend/src/prompts/{stage}.{lang}.ts`. Cada prompt está en español e inglés nativos, no traducidos. Si modificás uno, hacelo en ambos idiomas para mantener paridad.
+Los prompts viven en `apps/backend/src/prompts/stage{N}.{es|en}.ts`. Cada uno está escrito nativamente en su idioma — no traducido on-the-fly. Si modificás uno, actualizá ambas versiones.
 
 ---
 
 ## Seguridad
 
-- API keys solo en `.env`, nunca commiteado, nunca expuesto al frontend
-- Backend escucha por default solo en `127.0.0.1`
+- API keys solo en `.env`, nunca expuestas al frontend
+- Backend escucha en `127.0.0.1` por default (no `0.0.0.0`)
 - CORS restringido a `localhost:5173`
-- Rate limiting interno: máx 5 llamadas LLM concurrentes globales
+- Rate limiting: máx 5 llamadas LLM concurrentes
 - Logger filtra patrones de API key antes de imprimir
-- Validación Zod en todos los endpoints
-- DB con permisos restrictivos (`0600`)
+- Validación Zod en cada endpoint
+- DB con permisos `0600`
 
-**Lo que no está incluido:**
-
-- Encryption-at-rest de la DB. Si te importa, encriptá el filesystem.
-- Auth (porque es single-user). Si exponés esto a la red, agregalo vos.
+**Fuera de scope:** encryption-at-rest de la DB y autenticación (es single-user local; si exponés esto a la red, agregá auth).
 
 ---
 
 ## Publicación a X
 
-Velanza no se conecta a la API de X (paga). En su lugar, genera el texto del post y abre `x.com/intent/tweet` en pestaña nueva con el texto pre-llenado. Vos revisás y publicás manualmente.
+Velanza no usa la API de X. En su lugar, genera el texto del post y abre `x.com/intent/tweet` en una pestaña nueva con el texto pre-llenado. Vos revisás y publicás manualmente.
 
-La intención de publicar conceptos generados es completar el bucle: los modelos futuros entrenan sobre datos públicos. Cada concepto que entra a X queda como candidato a entrar al corpus de la próxima generación de modelos. Si la metodología de Velanza produce vocabulario útil, eventualmente vuelve.
-
-Templates editables desde la vista de Settings.
+La intención es completar el bucle: los modelos futuros entrenan sobre datos públicos. Cada concepto que entra a X queda como candidato a entrar al corpus de la próxima generación.
 
 ---
 
 ## Limitaciones reconocidas
 
-Velanza es exploratorio, no confirmatorio. Algunas limitaciones de diseño:
-
-- **Validación single-rater.** Sin múltiples evaluadores no se puede calcular acuerdo inter-rater (Cohen's kappa). Los resultados son juicios personales del usuario, no consenso.
-- **Verificación de existencia imperfecta.** El verificador es otra LLM. No conoce todos los lenguajes humanos exhaustivamente. Un concepto marcado como "sin equivalente" puede tener equivalente en alguna lengua menor que el modelo no conoce.
+- **Validación single-rater.** Sin múltiples evaluadores no se puede calcular acuerdo inter-rater (Cohen's kappa). Los resultados son juicios personales, no consenso.
+- **Verificación de existencia imperfecta.** El verificador es otra LLM. No conoce todos los lenguajes exhaustivamente. Un concepto "sin equivalente" puede tenerlo en alguna lengua menor.
 - **Sesgo de mismo modelo.** Si Exploradora y Verificadora son la misma familia de modelo, comparten priors y la verificación está sesgada. Mezclá proveedores cuando puedas.
-- **Etapa 2 no replica Hewitt.** Sin training real de embeddings, lo que hacemos es probing por prompts. Es sugestivo, no probatorio.
-- **Etapa 3 puede colapsar a abreviaciones triviales.** Es posible que el "protocolo emergente" sea solo siglas obvias sin estructura genuina. Ese resultado también es válido — _los modelos no desarrollan protocolos novedosos bajo presión vía prompts_ es una conclusión interesante.
+- **Etapa 2 no replica Hewitt.** Sin training real de embeddings, hacemos probing por prompts. Sugestivo, no probatorio.
+- **Etapa 3 puede colapsar a abreviaciones triviales.** Ese resultado también es válido y documentable.
 
 ---
 
@@ -214,7 +191,7 @@ Velanza es exploratorio, no confirmatorio. Algunas limitaciones de diseño:
 
 Velanza nació de una conversación entre un humano y Claude sobre [PostGPT](https://github.com/ariannamethod/postgpt), un experimento que sugiere que el conocimiento ya está implícito en el texto sin necesidad de entrenamiento.
 
-La conversación derivó hacia una pregunta más profunda: si los modelos pueden encontrar estructura en el lenguaje sin entrenamiento, ¿pueden también encontrar conceptos para los que el lenguaje todavía no tiene palabras? La intuición Whorfiana — los humanos no podemos pensar lo que no podemos nombrar — sugería un experimento concreto: hacer dialogar a dos IAs específicamente para generar nombres para experiencias humanas no lexicalizadas.
+La conversación derivó hacia una pregunta más profunda: si los modelos pueden encontrar estructura en el lenguaje sin entrenamiento, ¿pueden también encontrar conceptos para los que el lenguaje todavía no tiene palabras? La intuición Whorfiana — los humanos no podemos pensar lo que no podemos nombrar — sugería un experimento concreto.
 
 El primer prototipo fue un HTML de 600 líneas. Las primeras dos palabras que produjo fueron _entresí_ y _velanza_. La segunda nombró el proyecto.
 
@@ -228,4 +205,4 @@ Cualquiera puede clonar, modificar, redistribuir, usar comercialmente. Si public
 
 ---
 
-_Para ver la especificación técnica completa, ver [SPEC.md](./SPEC.md)._
+_Especificación técnica completa: [SPEC.md](./SPEC.md)_
