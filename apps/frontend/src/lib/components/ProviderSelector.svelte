@@ -61,47 +61,60 @@
       </select>
     </div>
     <div class="field">
-      <label>Temperature ({temperature.toFixed(1)})</label>
-      <input
-        type="range"
-        min="0"
-        max="2"
-        step="0.1"
-        value={temperature}
-        oninput={handleTempChange}
-      />
+      <label>Temperature</label>
+      <div class="temp-row">
+        <input
+          type="range"
+          min="0"
+          max="2"
+          step="0.1"
+          value={temperature}
+          oninput={handleTempChange}
+          style="flex:1; min-width:80px;"
+        />
+        <span class="temp-value">{temperature.toFixed(1)}</span>
+      </div>
     </div>
   </div>
 </fieldset>
 
 <style>
   fieldset {
-    border: 1px solid #ccc;
-    border-radius: 6px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-dim);
+    border-radius: 2px;
     padding: 0.75rem 1rem;
   }
   legend {
-    font-weight: 600;
-    padding: 0 0.25rem;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    padding: 0 0.4rem;
   }
   .fields {
     display: flex;
     gap: 1rem;
     flex-wrap: wrap;
+    align-items: flex-end;
   }
   .field {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.3rem;
     min-width: 140px;
   }
-  label {
-    font-size: 0.8rem;
-    color: #555;
+  .temp-value {
+    font-size: 0.75rem;
+    color: var(--cyan);
+    min-width: 2rem;
+    font-variant-numeric: tabular-nums;
   }
-  select {
-    padding: 0.35rem 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+  .temp-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 </style>

@@ -84,43 +84,67 @@
     max-width: 800px;
     margin: 0 auto;
   }
+
   .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
+    padding-bottom: 0.85rem;
+    border-bottom: 1px solid var(--border-dim);
   }
   h2 {
     margin: 0;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
   }
   button {
-    padding: 0.4rem 1rem;
-    background: #1976d2;
-    color: white;
-    border: none;
-    border-radius: 4px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.35rem 0.85rem;
+    border-radius: 2px;
     cursor: pointer;
+    transition: all 0.15s;
   }
+  button:hover {
+    border-color: var(--cyan-dim);
+    color: var(--cyan);
+  }
+
   .concepts {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
   }
+
   .concept-section {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.6rem;
   }
+
   .rating-summary {
     display: flex;
     align-items: center;
     gap: 1rem;
+    padding: 0.5rem 0;
   }
   .rated {
-    color: #2e7d32;
-    font-size: 0.9rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--status-completed);
   }
+
   .error {
-    color: #c62828;
+    color: var(--status-failed);
+    font-size: 0.85rem;
   }
 </style>

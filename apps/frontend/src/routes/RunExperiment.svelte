@@ -112,7 +112,7 @@
 
   {#if stabilizedWords.length > 0}
     <div class="stabilized-concepts">
-      <strong>{$t.experiment.run.conceptStabilized}:</strong>
+      <span class="stabilized-label">{$t.experiment.run.conceptStabilized}</span>
       {#each stabilizedWords as word}
         <span class="concept-badge">{word}</span>
       {/each}
@@ -136,49 +136,94 @@
     max-width: 900px;
     margin: 0 auto;
   }
+
   .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.85rem;
+    border-bottom: 1px solid var(--border-dim);
   }
   h2 {
     margin: 0;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
   }
+
   button {
-    padding: 0.4rem 1rem;
-    background: #1976d2;
-    color: white;
-    border: none;
-    border-radius: 4px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.35rem 0.85rem;
+    border-radius: 2px;
     cursor: pointer;
+    transition: all 0.15s;
   }
+  button:hover {
+    border-color: var(--cyan-dim);
+    color: var(--cyan);
+  }
+  button:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
   .stabilized-concepts {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
     margin-bottom: 1rem;
-    padding: 0.75rem;
-    background: #e8f5e9;
-    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    background: rgba(0, 229, 204, 0.05);
+    border: 1px solid rgba(0, 229, 204, 0.2);
+    border-radius: 2px;
+    align-items: center;
+  }
+  .stabilized-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-right: 0.25rem;
   }
   .concept-badge {
-    padding: 0.2rem 0.6rem;
-    background: #4caf50;
-    color: white;
-    border-radius: 12px;
-    font-size: 0.85rem;
+    font-family: var(--font-serif);
+    font-size: 0.9rem;
+    font-style: italic;
+    color: var(--cyan);
+    padding: 0.1rem 0.6rem;
+    border: 1px solid rgba(0, 229, 204, 0.3);
+    border-radius: 2px;
+    text-shadow: 0 0 12px rgba(0, 229, 204, 0.4);
   }
+
   .completed-banner {
-    padding: 1rem;
-    background: #e8f5e9;
-    border-radius: 6px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 0.85rem 1rem;
     margin-bottom: 1rem;
+    background: rgba(52, 211, 153, 0.06);
+    border: 1px solid rgba(52, 211, 153, 0.25);
+    border-radius: 2px;
   }
+  .completed-banner p {
+    margin: 0;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--status-completed);
+  }
+
   .error {
-    color: #c62828;
+    color: var(--status-failed);
+    font-size: 0.85rem;
   }
 </style>

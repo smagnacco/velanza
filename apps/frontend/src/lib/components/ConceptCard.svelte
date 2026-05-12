@@ -38,47 +38,94 @@
 
 <style>
   .concept-card {
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 1rem 1.25rem;
-    background: #fff;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-dim);
+    border-radius: 2px;
+    padding: 1.25rem 1.25rem 1rem;
+    transition: border-color 0.2s;
   }
   .concept-card.stabilized {
-    border-color: #4caf50;
+    border-color: rgba(0, 229, 204, 0.25);
+    box-shadow: inset 0 0 40px rgba(0, 229, 204, 0.03);
   }
+
   header {
     display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
+    align-items: baseline;
+    gap: 0.75rem;
+    margin-bottom: 0.85rem;
     flex-wrap: wrap;
   }
+
   h3 {
     margin: 0;
-    font-size: 1.25rem;
+    font-family: var(--font-serif);
+    font-size: 1.6rem;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--cyan);
+    letter-spacing: 0.02em;
+    text-shadow: 0 0 30px rgba(0, 229, 204, 0.3);
   }
+
   .domain {
-    font-size: 0.75rem;
-    color: #888;
-    background: #f5f5f5;
-    padding: 0.15rem 0.5rem;
-    border-radius: 4px;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    border: 1px solid var(--border-dim);
+    padding: 0.1rem 0.4rem;
+    border-radius: 2px;
   }
+
   .badge-stabilized {
-    font-size: 0.7rem;
-    background: #e8f5e9;
-    color: #2e7d32;
-    padding: 0.15rem 0.5rem;
-    border-radius: 4px;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--status-completed);
+    background: rgba(52, 211, 153, 0.08);
+    border: 1px solid var(--status-completed);
+    padding: 0.1rem 0.45rem;
+    border-radius: 2px;
   }
+
   .definition {
-    margin: 0.5rem 0;
+    font-family: var(--font-serif);
+    font-size: 1rem;
+    line-height: 1.65;
+    color: var(--text-primary);
+    margin: 0 0 0.85rem;
+    border-left: 2px solid var(--border);
+    padding-left: 0.85rem;
+  }
+
+  .etymology {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    margin: 0.35rem 0 0;
     line-height: 1.5;
   }
-  .etymology,
+  .etymology strong {
+    color: var(--text-dim);
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    margin-right: 0.35rem;
+  }
+
   .existence {
-    margin: 0.25rem 0;
-    font-size: 0.9rem;
-    color: #444;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    margin: 0.25rem 0 0;
+  }
+  .existence strong {
+    color: var(--text-dim);
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    margin-right: 0.35rem;
   }
 </style>

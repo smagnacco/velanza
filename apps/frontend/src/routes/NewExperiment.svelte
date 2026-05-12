@@ -121,8 +121,10 @@
 
   <section>
     <h3>{$t.experiment.new.runsPerDomain}</h3>
-    <input type="number" min="1" max="10" bind:value={runsPerDomain} />
-    <span class="total">({totalRuns} total runs)</span>
+    <div class="runs-row">
+      <input type="number" min="1" max="10" bind:value={runsPerDomain} />
+      <span class="total">({totalRuns} total runs)</span>
+    </div>
   </section>
 
   <section>
@@ -155,86 +157,148 @@
     <p class="error">{error}</p>
   {/if}
 
-  <button onclick={start} disabled={creating || $providers.length === 0}>
+  <button class="launch-btn" onclick={start} disabled={creating || $providers.length === 0}>
     {creating ? $t.common.loading : $t.experiment.new.start}
   </button>
 </div>
 
 <style>
   .new-experiment {
-    max-width: 700px;
+    max-width: 680px;
     margin: 0 auto;
   }
+
   h2 {
-    margin-bottom: 1.5rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin: 0 0 2rem;
+    padding-bottom: 0.85rem;
+    border-bottom: 1px solid var(--border-dim);
   }
+
   section {
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
   }
+
   h3 {
-    font-size: 1rem;
-    margin-bottom: 0.5rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin: 0 0 0.75rem;
   }
+
   .hint {
-    font-size: 0.85rem;
-    color: #666;
-    margin-bottom: 0.5rem;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    margin-bottom: 0.65rem;
+    font-style: italic;
+    font-family: var(--font-serif);
   }
+
   .radio-group {
     display: flex;
     gap: 1.5rem;
   }
   .radio-group label {
+    font-size: 0.8rem;
+    text-transform: none;
+    color: var(--text-secondary);
     cursor: pointer;
+    letter-spacing: normal;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
   }
+  .radio-group label:hover {
+    color: var(--text-primary);
+  }
+
   .domain-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 0.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+    gap: 0.4rem;
   }
   .domain-option {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
-    padding: 0.4rem 0.6rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    gap: 0.5rem;
+    padding: 0.45rem 0.65rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-dim);
+    border-radius: 2px;
     cursor: pointer;
-    font-size: 0.85rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    transition: all 0.15s;
+    text-transform: none;
+    letter-spacing: normal;
+  }
+  .domain-option:hover {
+    border-color: var(--border);
+    color: var(--text-primary);
   }
   .domain-option.selected {
-    border-color: #1976d2;
-    background: #e3f2fd;
+    border-color: rgba(0, 229, 204, 0.4);
+    color: var(--cyan);
+    background: var(--cyan-trace);
+  }
+
+  .runs-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
   }
   input[type='number'] {
-    width: 80px;
-    padding: 0.35rem 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    width: 72px;
   }
   .total {
-    font-size: 0.85rem;
-    color: #666;
-    margin-left: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--text-dim);
   }
-  button {
-    padding: 0.6rem 2rem;
-    background: #1976d2;
-    color: white;
-    border: none;
-    border-radius: 4px;
+
+  .agent-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .launch-btn {
+    margin-top: 0.5rem;
+    padding: 0.6rem 2.5rem;
+    background: transparent;
+    border: 1px solid var(--cyan);
+    color: var(--cyan);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border-radius: 2px;
     cursor: pointer;
-    font-size: 1rem;
+    transition: all 0.15s;
   }
-  button:disabled {
-    opacity: 0.6;
+  .launch-btn:hover {
+    background: var(--cyan-glow);
+    box-shadow: var(--glow-sm);
+  }
+  .launch-btn:disabled {
+    opacity: 0.35;
     cursor: not-allowed;
+    box-shadow: none;
   }
+
   .error {
-    color: #c62828;
+    color: var(--status-failed);
+    font-size: 0.8rem;
   }
   .warning {
-    color: #e65100;
-    font-size: 0.9rem;
+    color: var(--status-pending);
+    font-size: 0.8rem;
+    font-style: italic;
+    font-family: var(--font-serif);
   }
 </style>

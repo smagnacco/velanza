@@ -1,0 +1,263 @@
+/* ── Velanza design system ────────────────────────────────────────────────── */
+/* Dark laboratory / bioluminescent aesthetic                                  */
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap');
+
+/* ── Tokens ────────────────────────────────────────────────────────────────── */
+:root {
+  /* Backgrounds */
+  --bg-void:    #050810;
+  --bg-deep:    #080d18;
+  --bg-surface: #0d1424;
+  --bg-raised:  #111b2e;
+  --bg-float:   #162038;
+
+  /* Bioluminescent cyan/teal accents */
+  --cyan:       #00e5cc;
+  --cyan-dim:   #00b8a4;
+  --cyan-glow:  rgba(0, 229, 204, 0.12);
+  --cyan-trace: rgba(0, 229, 204, 0.06);
+
+  /* Agent role colors */
+  --explorer:   #00e5cc;   /* cyan  */
+  --critic:     #ff6b6b;   /* coral */
+  --verifier:   #a78bfa;   /* violet */
+
+  /* Text */
+  --text-primary:   #c8d8e8;
+  --text-secondary: #6b8aaa;
+  --text-dim:       #3d5570;
+  --text-accent:    #00e5cc;
+
+  /* Borders */
+  --border:       rgba(0, 229, 204, 0.12);
+  --border-dim:   rgba(0, 229, 204, 0.06);
+  --border-bright:rgba(0, 229, 204, 0.35);
+
+  /* Status */
+  --status-pending:   #f59e0b;
+  --status-running:   #00e5cc;
+  --status-paused:    #a78bfa;
+  --status-completed: #34d399;
+  --status-failed:    #ff6b6b;
+
+  /* Typography */
+  --font-mono:  'JetBrains Mono', 'Fira Code', monospace;
+  --font-serif: 'Crimson Pro', Georgia, serif;
+  --font-ui:    var(--font-mono);
+
+  /* Glow effects */
+  --glow-cyan:  0 0 20px rgba(0, 229, 204, 0.25), 0 0 60px rgba(0, 229, 204, 0.08);
+  --glow-sm:    0 0 8px rgba(0, 229, 204, 0.2);
+}
+
+/* ── Reset & base ──────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 1.6;
+  background: var(--bg-void);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--bg-deep); }
+::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 2px; }
+
+/* Selection */
+::selection { background: rgba(0, 229, 204, 0.2); color: var(--cyan); }
+
+/* ── Typography helpers ────────────────────────────────────────────────────── */
+.serif   { font-family: var(--font-serif); }
+.mono    { font-family: var(--font-mono); }
+
+h1, h2, h3, h4 {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+/* Philosophical / definition content gets the serif treatment */
+.philosophical, .definition-text, blockquote {
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  color: var(--text-primary);
+  font-style: italic;
+}
+
+/* ── Shared component styles ───────────────────────────────────────────────── */
+
+/* Panels */
+.panel {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.panel-raised {
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: 1px solid transparent;
+}
+
+.btn-primary {
+  background: transparent;
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+.btn-primary:hover {
+  background: var(--cyan-glow);
+  box-shadow: var(--glow-sm);
+}
+
+.btn-ghost {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--text-secondary);
+}
+.btn-ghost:hover {
+  border-color: var(--border-bright);
+  color: var(--text-primary);
+}
+
+.btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Inputs */
+input[type='text'],
+input[type='number'],
+textarea,
+select {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  background: var(--bg-deep);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--text-primary);
+  padding: 0.4rem 0.6rem;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+input[type='text']:focus,
+input[type='number']:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--cyan-dim);
+  box-shadow: 0 0 0 1px var(--cyan-dim);
+}
+
+select option { background: var(--bg-surface); }
+textarea { resize: vertical; }
+
+/* Range inputs */
+input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+}
+input[type='range']::-webkit-slider-runnable-track {
+  height: 2px;
+  background: var(--border);
+  border-radius: 1px;
+}
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--cyan);
+  margin-top: -5px;
+  box-shadow: var(--glow-sm);
+}
+
+/* Radio / checkbox */
+input[type='radio'],
+input[type='checkbox'] {
+  accent-color: var(--cyan);
+}
+
+/* Labels */
+label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Status badges */
+.badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.5rem;
+  border-radius: 2px;
+  border: 1px solid currentColor;
+}
+
+.badge-pending   { color: var(--status-pending);   background: rgba(245,158,11,0.08); }
+.badge-running   { color: var(--status-running);   background: rgba(0,229,204,0.08);  }
+.badge-paused    { color: var(--status-paused);    background: rgba(167,139,250,0.08);}
+.badge-completed { color: var(--status-completed); background: rgba(52,211,153,0.08); }
+.badge-failed    { color: var(--status-failed);    background: rgba(255,107,107,0.08);}
+
+/* Dividers */
+hr {
+  border: none;
+  border-top: 1px solid var(--border-dim);
+  margin: 1.5rem 0;
+}
+
+/* Error text */
+.error-text {
+  font-size: 0.8rem;
+  color: var(--status-failed);
+  font-family: var(--font-mono);
+}
+
+/* Scanlines effect (subtle) */
+.scanlines::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+  pointer-events: none;
+}

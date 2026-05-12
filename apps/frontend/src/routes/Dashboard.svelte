@@ -76,101 +76,157 @@
     max-width: 900px;
     margin: 0 auto;
   }
+
   .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-dim);
   }
   h2 {
     margin: 0;
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
   }
   button {
+    background: transparent;
+    border: 1px solid var(--cyan);
+    color: var(--cyan);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
     padding: 0.4rem 1rem;
-    background: #1976d2;
-    color: white;
-    border: none;
-    border-radius: 4px;
+    border-radius: 2px;
     cursor: pointer;
-    font-size: 0.85rem;
+    transition: all 0.15s;
   }
+  button:hover {
+    background: var(--cyan-glow);
+    box-shadow: var(--glow-sm);
+  }
+
   .empty {
     text-align: center;
-    padding: 3rem;
+    padding: 4rem 2rem;
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
   }
+
   .experiment-list {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.5rem;
   }
+
   .experiment-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.75rem 1rem;
-    border: 1px solid #e0e0e0;
-    border-radius: 6px;
-    background: white;
+    padding: 0.85rem 1rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-dim);
+    border-radius: 2px;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 0.75rem;
+    transition: border-color 0.15s;
   }
+  .experiment-row:hover {
+    border-color: var(--border);
+  }
+
   .exp-info {
     display: flex;
-    gap: 0.75rem;
+    gap: 1rem;
     align-items: center;
   }
+
   .exp-stage {
-    font-weight: 600;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--cyan);
   }
   .exp-lang {
-    font-size: 0.75rem;
-    background: #f0f0f0;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    border: 1px solid var(--border-dim);
     padding: 0.1rem 0.4rem;
-    border-radius: 3px;
+    border-radius: 2px;
+    letter-spacing: 0.08em;
   }
   .exp-date {
-    font-size: 0.8rem;
-    color: #888;
+    font-size: 0.75rem;
+    color: var(--text-dim);
   }
+
   .exp-progress {
     display: flex;
-    gap: 0.75rem;
+    gap: 1rem;
     align-items: center;
   }
+
   .exp-actions {
     display: flex;
     gap: 0.5rem;
   }
+  .exp-actions button {
+    font-size: 0.65rem;
+    padding: 0.3rem 0.75rem;
+    border-color: var(--border);
+    color: var(--text-secondary);
+  }
+  .exp-actions button:hover {
+    border-color: var(--cyan-dim);
+    color: var(--cyan);
+  }
+
   .status {
-    font-size: 0.75rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
     padding: 0.15rem 0.5rem;
-    border-radius: 10px;
+    border-radius: 2px;
+    border: 1px solid currentColor;
   }
   .status-pending {
-    background: #fff3e0;
-    color: #e65100;
+    color: var(--status-pending);
+    background: rgba(245, 158, 11, 0.08);
   }
   .status-running {
-    background: #e3f2fd;
-    color: #1565c0;
+    color: var(--status-running);
+    background: rgba(0, 229, 204, 0.08);
   }
   .status-paused {
-    background: #fce4ec;
-    color: #880e4f;
+    color: var(--status-paused);
+    background: rgba(167, 139, 250, 0.08);
   }
   .status-completed {
-    background: #e8f5e9;
-    color: #2e7d32;
+    color: var(--status-completed);
+    background: rgba(52, 211, 153, 0.08);
   }
   .status-failed {
-    background: #ffebee;
-    color: #b71c1c;
+    color: var(--status-failed);
+    background: rgba(255, 107, 107, 0.08);
   }
+
   .runs {
-    font-size: 0.8rem;
-    color: #666;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    font-variant-numeric: tabular-nums;
   }
   .error {
-    color: #c62828;
+    color: var(--status-failed);
+    font-size: 0.85rem;
   }
 </style>

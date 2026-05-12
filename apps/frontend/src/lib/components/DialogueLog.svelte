@@ -15,9 +15,9 @@
   let { entries }: Props = $props();
 
   const roleColors: Record<string, string> = {
-    explorer: '#1565c0',
-    critic: '#b71c1c',
-    verifier: '#2e7d32',
+    explorer: 'var(--explorer)',
+    critic: 'var(--critic)',
+    verifier: 'var(--verifier)',
   };
 </script>
 
@@ -38,42 +38,74 @@
   .dialogue-log {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    max-height: 600px;
+    gap: 0.5rem;
+    max-height: 640px;
     overflow-y: auto;
-    padding: 0.5rem;
+    padding: 0.25rem;
+    background: var(--bg-deep);
+    border: 1px solid var(--border-dim);
+    border-radius: 2px;
   }
+
   .entry {
-    border-left: 3px solid var(--role-color);
-    padding: 0.5rem 0.75rem;
-    background: #fafafa;
-    border-radius: 0 4px 4px 0;
+    border-left: 2px solid var(--role-color);
+    padding: 0.65rem 0.85rem;
+    background: var(--bg-surface);
+    position: relative;
+    transition: background 0.15s;
   }
+  .entry:hover {
+    background: var(--bg-raised);
+  }
+
+  /* subtle ambient glow from the role color */
+  .entry::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      rgba(var(--role-color-raw, 0, 229, 204), 0.04) 0%,
+      transparent 60%
+    );
+    pointer-events: none;
+  }
+
   .entry-header {
     display: flex;
-    gap: 0.75rem;
-    margin-bottom: 0.25rem;
-    font-size: 0.8rem;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+    align-items: center;
   }
+
   .role {
+    font-size: 0.65rem;
     font-weight: 700;
-    color: var(--role-color);
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    color: var(--role-color);
   }
+
   .round {
-    color: #666;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    letter-spacing: 0.06em;
   }
+
   .time {
-    color: #999;
+    font-size: 0.65rem;
+    color: var(--text-dim);
     margin-left: auto;
+    font-variant-numeric: tabular-nums;
+    opacity: 0.6;
   }
+
   .text {
     margin: 0;
     white-space: pre-wrap;
-    font-family: inherit;
+    font-family: var(--font-serif);
     font-size: 0.9rem;
-    line-height: 1.5;
-    color: #333;
+    line-height: 1.65;
+    color: var(--text-primary);
   }
 </style>

@@ -57,23 +57,11 @@
 </div>
 
 <style>
-  :global(*, *::before, *::after) {
-    box-sizing: border-box;
-  }
-  :global(body) {
-    margin: 0;
-    font-family:
-      system-ui,
-      -apple-system,
-      sans-serif;
-    background: #f5f5f5;
-    color: #212121;
-  }
-
   .app {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    background: var(--bg-void);
   }
 
   nav {
@@ -81,52 +69,73 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0 1.5rem;
-    height: 56px;
-    background: #1565c0;
-    color: white;
+    height: 52px;
+    background: var(--bg-deep);
+    border-bottom: 1px solid var(--border);
     position: sticky;
     top: 0;
-    z-index: 10;
+    z-index: 100;
   }
 
   .nav-brand {
-    font-size: 1.2rem;
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
     font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
     background: none;
     border: none;
-    color: white;
+    color: var(--cyan);
     cursor: pointer;
     padding: 0;
-    margin-right: 1rem;
+    margin-right: 1.5rem;
+    text-shadow: var(--glow-sm);
+    transition: text-shadow 0.2s;
+  }
+  .nav-brand:hover {
+    text-shadow: var(--glow-cyan);
   }
 
   .nav-links {
     display: flex;
-    gap: 0.25rem;
+    gap: 0.1rem;
     flex: 1;
   }
 
-  .nav-links button,
-  .lang-toggle {
+  .nav-links button {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
     background: none;
     border: none;
-    color: rgba(255, 255, 255, 0.85);
+    color: var(--text-secondary);
     cursor: pointer;
-    padding: 0.4rem 0.75rem;
-    border-radius: 4px;
-    font-size: 0.9rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 2px;
+    transition: color 0.15s;
   }
-
-  .nav-links button:hover,
-  .lang-toggle:hover {
-    background: rgba(255, 255, 255, 0.15);
-    color: white;
+  .nav-links button:hover {
+    color: var(--text-primary);
+    background: var(--cyan-trace);
   }
 
   .lang-toggle {
-    margin-left: auto;
-    font-weight: 600;
-    border: 1px solid rgba(255, 255, 255, 0.4);
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0.25rem 0.6rem;
+    border-radius: 2px;
+    transition: all 0.15s;
+  }
+  .lang-toggle:hover {
+    border-color: var(--cyan-dim);
+    color: var(--cyan);
   }
 
   main {
