@@ -3,6 +3,7 @@ import { cors } from 'hono/cors';
 import { secureHeaders } from 'hono/secure-headers';
 import { env } from './env.js';
 import { logger } from './lib/logger.js';
+import { initSchema } from './db/setup-test.js';
 import { healthRouter } from './routes/health.js';
 import { providersRouter } from './routes/providers.js';
 import { experimentsRouter } from './routes/experiments.js';
@@ -38,6 +39,7 @@ app.onError((err, c) => {
   return c.json({ error: 'Internal server error' }, 500);
 });
 
+initSchema();
 logger.info(`Velanza backend starting on ${env.HOST}:${env.PORT}`);
 
 export default {

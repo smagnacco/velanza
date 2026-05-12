@@ -1,6 +1,6 @@
 import { getDb } from './client.js';
 
-export function setupTestDb(): void {
+export function initSchema(): void {
   const db = getDb();
   const sqlite = (db as any).session.client;
 

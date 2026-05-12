@@ -6,7 +6,7 @@ process.env['DB_PATH'] = join(tmpdir(), `velanza-integration-${Date.now()}.db`);
 process.env['ANTHROPIC_API_KEY'] = 'sk-ant-test-placeholder';
 
 import { getDb, resetDb } from '../src/db/client.js';
-import { setupTestDb } from '../src/db/setup-test.js';
+import { initSchema as setupTestDb } from '../src/db/setup-test.js';
 import { experiments, runs, rounds, concepts } from '../src/db/schema.js';
 import { eq } from 'drizzle-orm';
 import { executeRun } from '../src/experiments/stage1/runner.js';
