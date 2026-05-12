@@ -301,6 +301,8 @@ export async function executeRun(
         payload: {
           conceptId,
           word: conceptData.word,
+          definition: conceptData.definition,
+          etymology: conceptData.etymology,
           existsInOtherLanguages: verification.existsInOtherLanguages,
         },
       });

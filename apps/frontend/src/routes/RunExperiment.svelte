@@ -1,9 +1,12 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
-  import { t, currentLang } from '../lib/i18n/index.js';
+  import { t } from '../lib/i18n/index.js';
   import { api } from '../lib/api.js';
   import DialogueLog from '../lib/components/DialogueLog.svelte';
+  import StabilizedConcepts from '../lib/components/StabilizedConcepts.svelte';
   import type { ExperimentRow } from '../lib/api.js';
+  import type { StabilizedConcept } from '../lib/components/StabilizedConcepts.svelte';
+  import type { LogEntry } from '../lib/components/DialogueLog.svelte';
 
   interface Props {
     experimentId: string;
@@ -11,17 +14,11 @@
   }
   let { experimentId, onNavigate }: Props = $props();
 
-  interface LogEntry {
-    round: number;
-    role: 'explorer' | 'critic' | 'verifier';
-    text: string;
-    timestamp: Date;
-  }
-
   let experiment = $state<ExperimentRow | null>(null);
   let log = $state<LogEntry[]>([]);
-  let stabilizedWords = $state<string[]>([]);
+  let stabilized = $state<StabilizedConcept[]>([]);
   let completed = $state(false);
+  let loading = $state(false); // typing indicator
   let pausing = $state(false);
   let error = $state<string | null>(null);
   let eventSource = $state<EventSource | null>(null);
@@ -47,8 +44,14 @@
     await api.experiments.start(experimentId);
     const es = api.experiments.stream(experimentId);
     eventSource = es;
+    loading = true;
+
+    es.addEventListener('round-started', () => {
+      loading = true;
+    });
 
     es.addEventListener('round-completed', (e: MessageEvent) => {
+      loading = false;
       const data = JSON.parse(e.data);
       if (data.text) {
         log = [
@@ -65,15 +68,25 @@
 
     es.addEventListener('concept-stabilized', (e: MessageEvent) => {
       const data = JSON.parse(e.data);
-      stabilizedWords = [...stabilizedWords, data.word];
+      stabilized = [
+        ...stabilized,
+        {
+          word: data.word,
+          definition: data.definition ?? '',
+          etymology: data.etymology ?? '',
+          existsInOtherLanguages: data.existsInOtherLanguages ?? 'uncertain',
+        },
+      ];
     });
 
     es.addEventListener('experiment-completed', () => {
+      loading = false;
       completed = true;
       es.close();
     });
 
     es.addEventListener('error', (e: MessageEvent) => {
+      loading = false;
       const data = JSON.parse(e.data ?? '{}');
       error = data.message ?? 'Stream error';
       es.close();
@@ -85,6 +98,7 @@
     try {
       await api.experiments.pause(experimentId);
       eventSource?.close();
+      loading = false;
     } catch (e) {
       error = e instanceof Error ? e.message : 'Failed to pause';
     } finally {
@@ -94,49 +108,66 @@
 </script>
 
 <div class="run-view">
+  <!-- Header -->
   <div class="header">
-    <h2>{$t.experiment.run.title}</h2>
-    {#if !completed && experiment?.status === 'running'}
-      <button onclick={pause} disabled={pausing}>
-        {pausing ? $t.common.loading : $t.experiment.run.pause}
-      </button>
-    {/if}
-    {#if experiment?.status === 'paused'}
-      <button onclick={startStream}>{$t.experiment.run.resume}</button>
-    {/if}
+    <div class="header-left">
+      <h2>{$t.experiment.run.title}</h2>
+      {#if !completed && experiment?.status !== 'paused'}
+        <span class="live-dot" aria-label="en vivo"></span>
+      {/if}
+    </div>
+    <div class="header-actions">
+      {#if !completed && experiment?.status === 'running'}
+        <button onclick={pause} disabled={pausing}>
+          {pausing ? $t.common.loading : $t.experiment.run.pause}
+        </button>
+      {/if}
+      {#if experiment?.status === 'paused'}
+        <button onclick={startStream}>{$t.experiment.run.resume}</button>
+      {/if}
+    </div>
   </div>
 
   {#if error}
-    <p class="error">{error}</p>
+    <p class="error-msg">{error}</p>
   {/if}
 
-  {#if stabilizedWords.length > 0}
-    <div class="stabilized-concepts">
-      <span class="stabilized-label">{$t.experiment.run.conceptStabilized}</span>
-      {#each stabilizedWords as word}
-        <span class="concept-badge">{word}</span>
-      {/each}
-    </div>
+  <!-- Dialogue -->
+  <DialogueLog entries={log} {loading} />
+
+  <!-- Stabilized concepts appear inline as they emerge -->
+  {#if stabilized.length > 0}
+    <StabilizedConcepts concepts={stabilized} />
   {/if}
 
+  <!-- Completed state -->
   {#if completed}
     <div class="completed-banner">
-      <p>✓ {$t.experiment.run.completed}</p>
+      <span>✓ {$t.experiment.run.completed}</span>
       <button onclick={() => onNavigate('validate', { id: experimentId })}>
-        {$t.experiment.validate.title}
+        {$t.experiment.validate.title} →
       </button>
     </div>
   {/if}
 
-  <DialogueLog entries={log} />
+  <!-- Footer -->
+  <footer>
+    <p>Cada ronda es una llamada independiente al modelo con system prompts distintos.</p>
+    <p>Ninguna instancia conoce las instrucciones de la otra.</p>
+    <p>El veredicto final no fue diseñado por ningún humano.</p>
+  </footer>
 </div>
 
 <style>
   .run-view {
-    max-width: 900px;
+    max-width: 860px;
     margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
   }
 
+  /* ── Header ──────────────────────────────────────────────────────── */
   .header {
     display: flex;
     justify-content: space-between;
@@ -145,12 +176,45 @@
     padding-bottom: 0.85rem;
     border-bottom: 1px solid var(--border-dim);
   }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
   h2 {
     margin: 0;
     font-size: 0.75rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--text-secondary);
+  }
+
+  /* Pulsing live indicator */
+  .live-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 8px var(--cyan);
+    animation: livePulse 2s infinite ease-in-out;
+  }
+  @keyframes livePulse {
+    0%,
+    100% {
+      opacity: 1;
+      box-shadow: 0 0 8px var(--cyan);
+    }
+    50% {
+      opacity: 0.4;
+      box-shadow: 0 0 3px var(--cyan);
+    }
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 0.5rem;
   }
 
   button {
@@ -175,55 +239,56 @@
     cursor: not-allowed;
   }
 
-  .stabilized-concepts {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-    padding: 0.75rem 1rem;
-    background: rgba(0, 229, 204, 0.05);
-    border: 1px solid rgba(0, 229, 204, 0.2);
-    border-radius: 2px;
-    align-items: center;
-  }
-  .stabilized-label {
-    font-size: 0.65rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    margin-right: 0.25rem;
-  }
-  .concept-badge {
-    font-family: var(--font-serif);
-    font-size: 0.9rem;
-    font-style: italic;
-    color: var(--cyan);
-    padding: 0.1rem 0.6rem;
-    border: 1px solid rgba(0, 229, 204, 0.3);
-    border-radius: 2px;
-    text-shadow: 0 0 12px rgba(0, 229, 204, 0.4);
+  /* ── Error ───────────────────────────────────────────────────────── */
+  .error-msg {
+    color: var(--status-failed);
+    font-size: 0.82rem;
+    margin: 0 0 1rem;
   }
 
+  /* ── Completed banner ────────────────────────────────────────────── */
   .completed-banner {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0.85rem 1rem;
-    margin-bottom: 1rem;
-    background: rgba(52, 211, 153, 0.06);
-    border: 1px solid rgba(52, 211, 153, 0.25);
+    margin-top: 1.5rem;
+    background: rgba(52, 211, 153, 0.05);
+    border: 1px solid rgba(52, 211, 153, 0.2);
     border-radius: 2px;
   }
-  .completed-banner p {
-    margin: 0;
-    font-size: 0.75rem;
-    letter-spacing: 0.08em;
+  .completed-banner span {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--status-completed);
   }
+  .completed-banner button {
+    border-color: var(--status-completed);
+    color: var(--status-completed);
+  }
+  .completed-banner button:hover {
+    background: rgba(52, 211, 153, 0.08);
+    box-shadow: 0 0 8px rgba(52, 211, 153, 0.2);
+  }
 
-  .error {
-    color: var(--status-failed);
-    font-size: 0.85rem;
+  /* ── Footer ──────────────────────────────────────────────────────── */
+  footer {
+    margin-top: 3rem;
+    padding: 1.5rem 0 1rem;
+    border-top: 1px solid var(--border-dim);
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  footer p {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: 0.82rem;
+    font-style: italic;
+    color: var(--text-dim);
+    line-height: 1.6;
+    text-align: center;
+    letter-spacing: 0.01em;
   }
 </style>

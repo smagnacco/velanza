@@ -1,7 +1,8 @@
 <script lang="ts">
   import { t } from '../i18n/index.js';
+  import { tick } from 'svelte';
 
-  interface LogEntry {
+  export interface LogEntry {
     round: number;
     role: 'explorer' | 'critic' | 'verifier';
     text: string;
@@ -10,102 +11,275 @@
 
   interface Props {
     entries: LogEntry[];
+    loading?: boolean;
   }
 
-  let { entries }: Props = $props();
+  let { entries, loading = false }: Props = $props();
 
-  const roleColors: Record<string, string> = {
-    explorer: 'var(--explorer)',
-    critic: 'var(--critic)',
-    verifier: 'var(--verifier)',
+  let scrollEl = $state<HTMLElement | null>(null);
+
+  // Scroll to bottom whenever entries change
+  $effect(() => {
+    entries;
+    tick().then(() => {
+      if (scrollEl) scrollEl.scrollTop = scrollEl.scrollHeight;
+    });
+  });
+
+  const roleLabel: Record<string, string> = {
+    explorer: 'Exploradora',
+    critic: 'Crítica',
+    verifier: 'Verificadora',
   };
+
+  // Group consecutive entries by the same domain run for visual separation
+  function isFirstInRun(entries: LogEntry[], i: number): boolean {
+    if (i === 0) return true;
+    const prev = entries[i - 1];
+    const curr = entries[i];
+    if (!prev || !curr) return false;
+    // New run if round number resets (round 1 after something higher)
+    return curr.round === 1 && prev.round > 1;
+  }
 </script>
 
-<div class="dialogue-log">
-  {#each entries as entry (entry.round + entry.role + entry.timestamp.toISOString())}
-    <div class="entry" style="--role-color: {roleColors[entry.role] ?? '#333'}">
-      <div class="entry-header">
-        <span class="role">{$t.experiment.run.role[entry.role]}</span>
-        <span class="round">{$t.experiment.run.round} {entry.round}</span>
-        <span class="time">{entry.timestamp.toLocaleTimeString()}</span>
+<div class="chat" bind:this={scrollEl}>
+  {#each entries as entry, i (entry.round + entry.role + entry.timestamp.toISOString())}
+    {#if isFirstInRun(entries, i)}
+      <div class="run-separator">
+        <span>— nueva corrida —</span>
       </div>
-      <pre class="text">{entry.text}</pre>
+    {/if}
+
+    <div class="message message-{entry.role}">
+      <div class="avatar" aria-label={roleLabel[entry.role]}>
+        {#if entry.role === 'explorer'}
+          <span class="avatar-icon">◈</span>
+        {:else if entry.role === 'critic'}
+          <span class="avatar-icon">◇</span>
+        {:else}
+          <span class="avatar-icon">◉</span>
+        {/if}
+      </div>
+
+      <div class="bubble">
+        <div class="bubble-header">
+          <span class="role-name">{roleLabel[entry.role]}</span>
+          <span class="round-tag">ronda {entry.round}</span>
+          <span class="ts">{entry.timestamp.toLocaleTimeString()}</span>
+        </div>
+        <div class="bubble-text">{entry.text}</div>
+      </div>
     </div>
   {/each}
+
+  {#if loading}
+    <div class="thinking">
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+    </div>
+  {/if}
 </div>
 
 <style>
-  .dialogue-log {
+  .chat {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    max-height: 640px;
+    gap: 0;
+    max-height: 620px;
     overflow-y: auto;
-    padding: 0.25rem;
+    padding: 1rem 0.5rem;
     background: var(--bg-deep);
     border: 1px solid var(--border-dim);
     border-radius: 2px;
+    scroll-behavior: smooth;
   }
 
-  .entry {
-    border-left: 2px solid var(--role-color);
-    padding: 0.65rem 0.85rem;
-    background: var(--bg-surface);
-    position: relative;
-    transition: background 0.15s;
-  }
-  .entry:hover {
-    background: var(--bg-raised);
-  }
-
-  /* subtle ambient glow from the role color */
-  .entry::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      90deg,
-      rgba(var(--role-color-raw, 0, 229, 204), 0.04) 0%,
-      transparent 60%
-    );
-    pointer-events: none;
-  }
-
-  .entry-header {
+  /* ── Run separator ───────────────────────────────────────────────── */
+  .run-separator {
     display: flex;
-    gap: 1rem;
-    margin-bottom: 0.5rem;
     align-items: center;
+    gap: 0.75rem;
+    margin: 1.25rem 0 1rem;
+    color: var(--text-dim);
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .run-separator::before,
+  .run-separator::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-dim);
   }
 
-  .role {
-    font-size: 0.65rem;
+  /* ── Message layout ──────────────────────────────────────────────── */
+  .message {
+    display: flex;
+    gap: 0.65rem;
+    padding: 0.25rem 0.5rem;
+    margin-bottom: 0.5rem;
+    align-items: flex-start;
+  }
+
+  /* Explorer: left-aligned */
+  .message-explorer {
+    flex-direction: row;
+  }
+
+  /* Critic: right-aligned */
+  .message-critic {
+    flex-direction: row-reverse;
+  }
+
+  /* Verifier: centered */
+  .message-verifier {
+    flex-direction: column;
+    align-items: center;
+    margin: 0.75rem 1.5rem;
+  }
+  .message-verifier .bubble {
+    width: 100%;
+    border-style: dashed;
+    background: rgba(167, 139, 250, 0.04);
+  }
+  .message-verifier .avatar {
+    flex-direction: row;
+    gap: 0.5rem;
+    align-self: center;
+  }
+
+  /* ── Avatar ─────────────────────────────────────────────────────── */
+  .avatar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    padding-top: 0.2rem;
+  }
+
+  .avatar-icon {
+    font-size: 1rem;
+    line-height: 1;
+  }
+
+  .message-explorer .avatar-icon {
+    color: var(--explorer);
+  }
+  .message-critic .avatar-icon {
+    color: var(--critic);
+  }
+  .message-verifier .avatar-icon {
+    color: var(--verifier);
+  }
+
+  /* ── Bubble ─────────────────────────────────────────────────────── */
+  .bubble {
+    max-width: 82%;
+    padding: 0.65rem 0.9rem;
+    border-radius: 2px;
+    border: 1px solid;
+    position: relative;
+  }
+
+  .message-explorer .bubble {
+    background: rgba(0, 229, 204, 0.04);
+    border-color: rgba(0, 229, 204, 0.18);
+    border-top-left-radius: 0;
+  }
+
+  .message-critic .bubble {
+    background: rgba(255, 107, 107, 0.04);
+    border-color: rgba(255, 107, 107, 0.18);
+    border-top-right-radius: 0;
+  }
+
+  /* ── Bubble header ───────────────────────────────────────────────── */
+  .bubble-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.45rem;
+  }
+
+  .role-name {
+    font-size: 0.62rem;
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--role-color);
+  }
+  .message-explorer .role-name {
+    color: var(--explorer);
+  }
+  .message-critic .role-name {
+    color: var(--critic);
+  }
+  .message-verifier .role-name {
+    color: var(--verifier);
   }
 
-  .round {
-    font-size: 0.65rem;
-    color: var(--text-dim);
+  .round-tag {
+    font-size: 0.58rem;
     letter-spacing: 0.06em;
+    color: var(--text-dim);
+    border: 1px solid var(--border-dim);
+    padding: 0.05rem 0.35rem;
+    border-radius: 2px;
   }
 
-  .time {
-    font-size: 0.65rem;
+  .ts {
+    font-size: 0.57rem;
     color: var(--text-dim);
+    opacity: 0.5;
     margin-left: auto;
     font-variant-numeric: tabular-nums;
-    opacity: 0.6;
   }
 
-  .text {
-    margin: 0;
-    white-space: pre-wrap;
+  /* ── Bubble text ─────────────────────────────────────────────────── */
+  .bubble-text {
     font-family: var(--font-serif);
     font-size: 0.9rem;
     line-height: 1.65;
     color: var(--text-primary);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  /* ── Typing indicator ───────────────────────────────────────────── */
+  .thinking {
+    display: flex;
+    gap: 0.3rem;
+    padding: 0.75rem 1rem;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--text-dim);
+    animation: pulse 1.4s infinite ease-in-out;
+  }
+  .dot:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  .dot:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+
+  @keyframes pulse {
+    0%,
+    80%,
+    100% {
+      opacity: 0.2;
+      transform: scale(0.8);
+    }
+    40% {
+      opacity: 1;
+      transform: scale(1);
+    }
   }
 </style>
