@@ -12,12 +12,21 @@
 
   let { conceptId, existing, onsaved }: Props = $props();
 
-  let recognized = $state<'yes' | 'no' | 'uncertain'>(existing?.recognized ?? 'uncertain');
-  let spanishCovers = $state<'yes' | 'no' | 'partially'>(existing?.spanishCovers ?? 'no');
-  let englishCovers = $state<'yes' | 'no' | 'partially'>(existing?.englishCovers ?? 'no');
-  let usability = $state<number>(existing?.usability ?? 3);
-  let wouldUse = $state<'yes' | 'no' | 'maybe'>(existing?.wouldUse ?? 'maybe');
-  let comment = $state<string>(existing?.comment ?? '');
+  let recognized = $state<'yes' | 'no' | 'uncertain'>('uncertain');
+  let spanishCovers = $state<'yes' | 'no' | 'partially'>('no');
+  let englishCovers = $state<'yes' | 'no' | 'partially'>('no');
+  let usability = $state<number>(3);
+  let wouldUse = $state<'yes' | 'no' | 'maybe'>('maybe');
+  let comment = $state<string>('');
+
+  $effect(() => {
+    recognized = existing?.recognized ?? 'uncertain';
+    spanishCovers = existing?.spanishCovers ?? 'no';
+    englishCovers = existing?.englishCovers ?? 'no';
+    usability = existing?.usability ?? 3;
+    wouldUse = existing?.wouldUse ?? 'maybe';
+    comment = existing?.comment ?? '';
+  });
   let saving = $state(false);
   let error = $state<string | null>(null);
 

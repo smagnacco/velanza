@@ -1,4 +1,4 @@
-import Anthropic from '@anthropic-ai/sdk';
+import Anthropic, { RateLimitError, InternalServerError } from '@anthropic-ai/sdk';
 import { env } from '../env.js';
 import { logger } from '../lib/logger.js';
 import { withConcurrencyLimit } from './rate-limit.js';
@@ -9,10 +9,7 @@ const MAX_RETRIES = 2;
 const RETRY_DELAY_MS = 1000;
 
 function isRetryable(error: unknown): boolean {
-  if (error instanceof Anthropic.APIStatusError) {
-    return error.status === 429 || error.status === 503;
-  }
-  return false;
+  return error instanceof RateLimitError || error instanceof InternalServerError;
 }
 
 async function sleep(ms: number) {
