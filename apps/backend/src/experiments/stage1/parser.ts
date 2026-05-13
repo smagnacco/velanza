@@ -39,6 +39,13 @@ const EXAMPLE_PATTERNS: Record<Language, RegExp> = {
   en: /EXAMPLE:\s*([\s\S]+?)(?=CONCEPT:|ETYMOLOGY:|DEFINITION:|$)/gi,
 };
 
+function stripMarkdown(text: string): string {
+  return text
+    .replace(/\*\*(.+?)\*\*/g, '$1')
+    .replace(/\*(.+?)\*/g, '$1')
+    .replace(/`(.+?)`/g, '$1');
+}
+
 function extractAll(pattern: RegExp, text: string): string[] {
   const results: string[] = [];
   const re = new RegExp(pattern.source, pattern.flags);
@@ -57,16 +64,16 @@ export function parseConcepts(text: string, lang: Language): ParsedConcept[] {
   const examples = extractAll(EXAMPLE_PATTERNS[lang], text);
 
   return words.map((word, i) => ({
-    word: word.trim(),
-    definition: (definitions[i] ?? '').trim(),
-    etymology: (etymologies[i] ?? '').trim(),
-    example: (examples[i] ?? '').trim(),
+    word: stripMarkdown(word.trim()),
+    definition: stripMarkdown((definitions[i] ?? '').trim()),
+    etymology: stripMarkdown((etymologies[i] ?? '').trim()),
+    example: stripMarkdown((examples[i] ?? '').trim()),
   }));
 }
 
 const VERDICT_PATTERNS: Record<Language, RegExp> = {
-  es: /VEREDICTO:\s*(APROBADO|RECHAZADO|REQUIERE_VERIFICACIÓN)/gi,
-  en: /VERDICT:\s*(APPROVED|REJECTED|REQUIRES_VERIFICATION)/gi,
+  es: /VEREDICTO:\s*\*{0,2}(APROBADO|RECHAZADO|REQUIERE_VERIFICACIÓN)\*{0,2}/gi,
+  en: /VERDICT:\s*\*{0,2}(APPROVED|REJECTED|REQUIRES_VERIFICATION)\*{0,2}/gi,
 };
 
 const VERDICT_CONCEPT_PATTERNS: Record<Language, RegExp> = {
@@ -113,9 +120,9 @@ export function parseVerdicts(text: string, lang: Language): ParsedVerdict[] {
   const stabilizedRaw = extractAll(STABILIZED_PATTERNS[lang], text);
 
   return verdicts.map((v, i) => ({
-    verdict: normalizeVerdict(v, lang),
-    word: (words[i] ?? '').trim(),
-    reason: (reasons[i] ?? '').trim(),
+    verdict: normalizeVerdict(stripMarkdown(v), lang),
+    word: stripMarkdown((words[i] ?? '').trim()),
+    reason: stripMarkdown((reasons[i] ?? '').trim()),
     stabilized: normalizeStabilized(stabilizedRaw[i] ?? '', lang),
   }));
 }
@@ -149,6 +156,6 @@ export function parseVerification(text: string, lang: Language): ParsedVerificat
 
   return {
     existsInOtherLanguages: normalizeExistence(exists[0] ?? '', lang),
-    evidence: (evidence[0] ?? '').trim(),
+    evidence: stripMarkdown((evidence[0] ?? '').trim()),
   };
 }

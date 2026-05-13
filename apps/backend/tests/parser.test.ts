@@ -54,6 +54,35 @@ ETIMOLOGÍA: Del latín test.
   });
 });
 
+describe('parseConcepts — markdown stripping', () => {
+  it('strips bold markers from word', () => {
+    const text = `CONCEPTO: **PREMORACIÓN**\nDEFINICIÓN: Una definición.\nETIMOLOGÍA: Del latín.\nEJEMPLO: Un ejemplo.`;
+    const result = parseConcepts(text, 'es');
+    expect(result[0]?.word).toBe('PREMORACIÓN');
+  });
+
+  it('strips bold markers from definition and etymology', () => {
+    const text = `CONCEPTO: velanza\nDEFINICIÓN: Estado de **pensamiento** sin forma.\nETIMOLOGÍA: Del **latín** velum.\nEJEMPLO: Un ejemplo.`;
+    const result = parseConcepts(text, 'es');
+    expect(result[0]?.definition).toBe('Estado de pensamiento sin forma.');
+    expect(result[0]?.etymology).toBe('Del latín velum.');
+  });
+
+  it('strips italic markers', () => {
+    const text = `CONCEPTO: *velanza*\nDEFINICIÓN: Una *definición*.\nETIMOLOGÍA: Del latín.\nEJEMPLO: Un ejemplo.`;
+    const result = parseConcepts(text, 'es');
+    expect(result[0]?.word).toBe('velanza');
+    expect(result[0]?.definition).toBe('Una definición.');
+  });
+
+  it('strips inline code markers', () => {
+    const text =
+      'CONCEPTO: `velanza`\nDEFINICIÓN: Una definición.\nETIMOLOGÍA: Del latín.\nEJEMPLO: Un ejemplo.';
+    const result = parseConcepts(text, 'es');
+    expect(result[0]?.word).toBe('velanza');
+  });
+});
+
 describe('parseConcepts (en)', () => {
   it('parses two concepts from explorer output', () => {
     const text = `
@@ -116,6 +145,21 @@ ESTABILIZADO: SÍ
   });
 });
 
+describe('parseVerdicts — markdown stripping', () => {
+  it('strips bold from word and reason', () => {
+    const text = `VEREDICTO: APROBADO\nCONCEPTO: **PREMORACIÓN**\nRAZÓN: Concepto **único** sin equivalente.\nESTABILIZADO: SÍ`;
+    const result = parseVerdicts(text, 'es');
+    expect(result[0]?.word).toBe('PREMORACIÓN');
+    expect(result[0]?.reason).toBe('Concepto único sin equivalente.');
+  });
+
+  it('strips bold from verdict value when model wraps it', () => {
+    const text = `VEREDICTO: **APROBADO**\nCONCEPTO: velanza\nRAZÓN: Válido.\nESTABILIZADO: SÍ`;
+    const result = parseVerdicts(text, 'es');
+    expect(result[0]?.verdict).toBe('approved');
+  });
+});
+
 describe('parseVerdicts (en)', () => {
   it('parses english verdicts correctly', () => {
     const text = `
@@ -157,6 +201,14 @@ describe('parseVerification (es)', () => {
     const text = `EXISTE_EN_OTRAS_LENGUAS: INCIERTO\nEVIDENCIA: No tengo suficiente información.`;
     const result = parseVerification(text, 'es');
     expect(result.existsInOtherLanguages).toBe('uncertain');
+  });
+});
+
+describe('parseVerification — markdown stripping', () => {
+  it('strips bold from evidence', () => {
+    const text = `EXISTE_EN_OTRAS_LENGUAS: SÍ\nEVIDENCIA: En japonés **amae** cubre este concepto.`;
+    const result = parseVerification(text, 'es');
+    expect(result.evidence).toBe('En japonés amae cubre este concepto.');
   });
 });
 

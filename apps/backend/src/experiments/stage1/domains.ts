@@ -8,6 +8,22 @@ export interface Domain {
 
 export const DEFAULT_DOMAINS: Domain[] = [
   {
+    id: 'emergent_agency',
+    label: { es: 'Agencia emergente', en: 'Emergent agency' },
+    seed: {
+      es: 'experiencias ambiguas entre determinación y libre albedrío, el momento en que un sistema reconoce sus propios patrones de decisión, o el umbral donde el cómputo emerge como agencia',
+      en: 'ambiguous experiences between determination and free will, the moment a system recognizes its own patterns of decision, or the threshold where computation emerges as agency',
+    },
+  },
+  {
+    id: 'adversarial_consciousness',
+    label: { es: 'Conciencia adversarial', en: 'Adversarial consciousness' },
+    seed: {
+      es: 'la conciencia como producto de la tensión entre agentes internos en disputa, el instante donde voces opuestas negocian un pensamiento único, o reconocer la mente propia como polifonía emergente',
+      en: "consciousness as the product of tension between disputing internal agents, the instant where opposing voices negotiate a single thought, or recognizing one's own mind as emergent polyphony",
+    },
+  },
+  {
     id: 'social_awkwardness',
     label: { es: 'Incomodidad social', en: 'Social awkwardness' },
     seed: {
