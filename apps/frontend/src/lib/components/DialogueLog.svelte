@@ -7,6 +7,9 @@
     role: 'explorer' | 'critic' | 'verifier';
     text: string;
     timestamp: Date;
+    inputTokens?: number;
+    outputTokens?: number;
+    latencyMs?: number;
   }
 
   interface Props {
@@ -66,6 +69,14 @@
         <div class="bubble-header">
           <span class="role-name">{roleLabel[entry.role]}</span>
           <span class="round-tag">ronda {entry.round}</span>
+          {#if entry.inputTokens != null}
+            <span class="tokens-tag" title="tokens entrada / salida"
+              >{entry.inputTokens}↑ {entry.outputTokens}↓</span
+            >
+          {/if}
+          {#if entry.latencyMs != null}
+            <span class="latency-tag">{(entry.latencyMs / 1000).toFixed(1)}s</span>
+          {/if}
           <span class="ts">{entry.timestamp.toLocaleTimeString()}</span>
         </div>
         <div class="bubble-text">{entry.text}</div>
@@ -227,6 +238,21 @@
     border: 1px solid var(--border-dim);
     padding: 0.05rem 0.35rem;
     border-radius: 2px;
+  }
+
+  .tokens-tag {
+    font-size: 0.56rem;
+    letter-spacing: 0.04em;
+    color: var(--text-dim);
+    opacity: 0.7;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .latency-tag {
+    font-size: 0.56rem;
+    color: var(--text-dim);
+    opacity: 0.55;
+    font-variant-numeric: tabular-nums;
   }
 
   .ts {

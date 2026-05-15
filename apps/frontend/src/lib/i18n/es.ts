@@ -72,14 +72,31 @@ export const es = {
     analyze: {
       title: 'Análisis',
       genuineGaps: 'Huecos genuinos',
-      genuineGapsDesc: 'Conceptos reconocidos, sin equivalente en español ni en otras lenguas.',
+      genuineGapsDesc:
+        'Conceptos reconocidos, sin equivalente en español, cuya existencia en otras lenguas no fue confirmada (incluye casos inciertos).',
+      genuineGapsTooltip:
+        'Un concepto es "hueco genuino" si: (1) el evaluador humano lo reconoció total o parcialmente, (2) el evaluador considera que el español no tiene palabra para ello, y (3) el verificador automático no confirmó su existencia en otras lenguas (puede ser "no existe" o "incierto").',
+      confirmedGaps: 'Huecos confirmados',
+      confirmedGapsDesc:
+        'Criterio conservador: el verificador confirmó explícitamente que el concepto no existe en otras lenguas.',
+      confirmedGapsTooltip:
+        'Subconjunto estricto de los huecos genuinos: el verificador automático devolvió "no existe" (no solo "incierto"). Son los candidatos más sólidos para neologismos.',
       totalConcepts: 'Total de conceptos',
       stabilized: 'Estabilizados',
       byDomain: 'Por dominio',
       export: 'Exportar',
       exportJson: 'Exportar JSON',
       exportCsv: 'Exportar CSV',
+      exportMarkdown: 'Exportar Markdown',
+      exportMarkdownSaved: 'Guardado en',
       publishX: 'Publicar en X',
+      wikipediaDraft: 'Borrador Wikipedia',
+      wikipediaModalTitle: 'Borrador para Wikipedia',
+      wikipediaModalHint:
+        'Copiá este wikitext y pegalo en el editor de Wikipedia. Revisá notabilidad y fuentes antes de publicar.',
+      wikipediaCopy: 'Copiar al portapapeles',
+      wikipediaCopied: '¡Copiado!',
+      wikipediaClose: 'Cerrar',
     },
   },
   concept: {
@@ -109,4 +126,5 @@ export const es = {
   },
 } as const;
 
-export type I18n = typeof es;
+type StringLeaves<T> = { [K in keyof T]: T[K] extends string ? string : StringLeaves<T[K]> };
+export type I18n = StringLeaves<typeof es>;

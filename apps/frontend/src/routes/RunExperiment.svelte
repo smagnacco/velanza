@@ -61,6 +61,9 @@
             role: data.role,
             text: data.text,
             timestamp: new Date(),
+            inputTokens: data.inputTokens,
+            outputTokens: data.outputTokens,
+            latencyMs: data.latencyMs,
           },
         ];
       }

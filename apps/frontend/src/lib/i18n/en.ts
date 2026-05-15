@@ -75,14 +75,30 @@ export const en: I18n = {
       title: 'Analysis',
       genuineGaps: 'Genuine gaps',
       genuineGapsDesc:
-        'Concepts that are recognized and have no equivalent in Spanish or other languages.',
+        'Recognized concepts with no Spanish equivalent whose existence in other languages was not confirmed (includes uncertain cases).',
+      genuineGapsTooltip:
+        'A concept is a "genuine gap" if: (1) the human rater recognized it fully or partially, (2) the rater considers Spanish has no word for it, and (3) the automated verifier did not confirm its existence in other languages (either "does not exist" or "uncertain").',
+      confirmedGaps: 'Confirmed gaps',
+      confirmedGapsDesc:
+        'Conservative criterion: the verifier explicitly confirmed the concept does not exist in other languages.',
+      confirmedGapsTooltip:
+        'Strict subset of genuine gaps: the automated verifier returned "does not exist" (not just "uncertain"). These are the strongest candidates for neologisms.',
       totalConcepts: 'Total concepts',
       stabilized: 'Stabilized',
       byDomain: 'By domain',
       export: 'Export',
       exportJson: 'Export JSON',
       exportCsv: 'Export CSV',
+      exportMarkdown: 'Export Markdown',
+      exportMarkdownSaved: 'Saved to',
       publishX: 'Publish to X',
+      wikipediaDraft: 'Wikipedia draft',
+      wikipediaModalTitle: 'Wikipedia draft',
+      wikipediaModalHint:
+        'Copy this wikitext and paste it into the Wikipedia editor. Check notability and sources before publishing.',
+      wikipediaCopy: 'Copy to clipboard',
+      wikipediaCopied: 'Copied!',
+      wikipediaClose: 'Close',
     },
   },
   concept: {

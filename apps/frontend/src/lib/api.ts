@@ -89,6 +89,16 @@ export const api = {
   exports: {
     json: (experimentId: string) => `${BASE}/exports/json?experiment=${experimentId}`,
     csv: (experimentId: string) => `${BASE}/exports/csv?experiment=${experimentId}`,
+    markdown: (experimentId: string) =>
+      request<{ filename: string; path: string }>('/exports/markdown', {
+        method: 'POST',
+        body: JSON.stringify({ experiment: experimentId }),
+      }),
+    wikipedia: (conceptId: string, language: 'es' | 'en') =>
+      request<{ wikitext: string; word: string }>('/exports/wikipedia', {
+        method: 'POST',
+        body: JSON.stringify({ conceptId, language }),
+      }),
   },
 };
 
