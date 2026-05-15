@@ -1,4 +1,4 @@
-Velanza Export — AI-driven lexical engineering in the spirit of PostGPT.
+Velanza — AI-driven lexical engineering in the spirit of PostGPT.
 This project uses an adversarial system with two agents:
 
 The Explorer: Hunts for real emotional, psychological, and philosophical gaps — subtle experiences that exist as implicit knowledge but lack a precise single-word anchor.
