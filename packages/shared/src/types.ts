@@ -12,8 +12,15 @@ export interface AvailableProvider {
   models: string[];
 }
 
+export interface CustomDomain {
+  label: string;
+  seed: string;
+}
+
+export type DomainEntry = string | CustomDomain;
+
 export interface ExperimentConfig {
-  domains: string[];
+  domains: DomainEntry[];
   runsPerDomain: number;
   language: Language;
   explorer: { provider: ProviderName; model: string; temperature: number };

@@ -3,7 +3,7 @@ import { eq } from 'drizzle-orm';
 import { getDb } from '../../db/client.js';
 import { experiments, runs, rounds, concepts } from '../../db/schema.js';
 import { getProvider } from '../../providers/registry.js';
-import { getDomainById } from './domains.js';
+import { resolveDomain } from './domains.js';
 import type { LLMProvider } from '../../providers/types.js';
 import { parseConcepts, parseVerdicts, parseVerification } from './parser.js';
 import { logger } from '../../lib/logger.js';
@@ -89,11 +89,15 @@ export async function executeRun(
   const db = getDb();
   const lang = config.language;
   const prompts = getPrompts(lang);
-  const domain = getDomainById(domainId);
 
-  if (!domain) {
-    throw new Error(`Domain not found: ${domainId}`);
-  }
+  // domainId here is the serialized domain entry from the run record
+  const domainEntry =
+    config.domains.find((d) =>
+      typeof d === 'string'
+        ? d === domainId
+        : `custom_${d.label.toLowerCase().replace(/\s+/g, '_').slice(0, 32)}` === domainId
+    ) ?? domainId;
+  const domain = resolveDomain(domainEntry, lang);
 
   const resolveProvider = providerOverride ?? getProvider;
   const explorerProvider = resolveProvider(config.explorer.provider);
@@ -137,7 +141,15 @@ export async function executeRun(
     );
     emit({
       type: 'round-completed',
-      payload: { runId, round: 1, role: 'explorer', text: round1.text },
+      payload: {
+        runId,
+        round: 1,
+        role: 'explorer',
+        text: round1.text,
+        inputTokens: round1.inputTokens,
+        outputTokens: round1.outputTokens,
+        latencyMs: round1.latencyMs,
+      },
     });
 
     // Round 2: Critic evaluates
@@ -166,7 +178,15 @@ export async function executeRun(
     );
     emit({
       type: 'round-completed',
-      payload: { runId, round: 2, role: 'critic', text: round2.text },
+      payload: {
+        runId,
+        round: 2,
+        role: 'critic',
+        text: round2.text,
+        inputTokens: round2.inputTokens,
+        outputTokens: round2.outputTokens,
+        latencyMs: round2.latencyMs,
+      },
     });
 
     // Round 3: Explorer refines
@@ -195,7 +215,15 @@ export async function executeRun(
     );
     emit({
       type: 'round-completed',
-      payload: { runId, round: 3, role: 'explorer', text: round3.text },
+      payload: {
+        runId,
+        round: 3,
+        role: 'explorer',
+        text: round3.text,
+        inputTokens: round3.inputTokens,
+        outputTokens: round3.outputTokens,
+        latencyMs: round3.latencyMs,
+      },
     });
 
     // Round 4: Critic final verdict
@@ -224,7 +252,15 @@ export async function executeRun(
     );
     emit({
       type: 'round-completed',
-      payload: { runId, round: 4, role: 'critic', text: round4.text },
+      payload: {
+        runId,
+        round: 4,
+        role: 'critic',
+        text: round4.text,
+        inputTokens: round4.inputTokens,
+        outputTokens: round4.outputTokens,
+        latencyMs: round4.latencyMs,
+      },
     });
 
     // Parse verdicts and get stabilized concepts
@@ -241,11 +277,14 @@ export async function executeRun(
     for (const verdict of verdicts) {
       if (!verdict.stabilized) continue;
 
-      const conceptData =
-        finalConcepts.find((c) => c.word.toLowerCase() === verdict.word.toLowerCase()) ??
-        finalConcepts[verdicts.indexOf(verdict)];
+      const conceptData = finalConcepts.find(
+        (c) => c.word.toLowerCase() === verdict.word.toLowerCase()
+      );
 
-      if (!conceptData) continue;
+      if (!conceptData) {
+        logger.warn(`No concept data found for stabilized verdict word: ${verdict.word}`);
+        continue;
+      }
 
       emit({
         type: 'round-started',
@@ -278,7 +317,15 @@ export async function executeRun(
       );
       emit({
         type: 'round-completed',
-        payload: { runId, round: 5, role: 'verifier', text: round5.text },
+        payload: {
+          runId,
+          round: 5,
+          role: 'verifier',
+          text: round5.text,
+          inputTokens: round5.inputTokens,
+          outputTokens: round5.outputTokens,
+          latencyMs: round5.latencyMs,
+        },
       });
 
       const verification = parseVerification(round5.text, lang);

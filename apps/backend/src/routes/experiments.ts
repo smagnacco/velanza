@@ -6,6 +6,7 @@ import { getDb } from '../db/client.js';
 import { experiments, runs } from '../db/schema.js';
 import { createExperimentSchema } from '@velanza/shared';
 import { executeExperiment } from '../experiments/stage1/runner.js';
+import { resolveDomain } from '../experiments/stage1/domains.js';
 import { createSSEStream } from '../lib/sse.js';
 import { logger } from '../lib/logger.js';
 import type { ExperimentConfig } from '@velanza/shared';
@@ -37,12 +38,13 @@ experimentsRouter.post('/', zValidator('json', createExperimentSchema), async (c
 
   // Pre-create all run records so progress is trackable and resumable
   const runRecords = [];
-  for (const domain of config.domains) {
+  for (const domainEntry of config.domains) {
+    const domainId = resolveDomain(domainEntry, config.language).id;
     for (let i = 0; i < config.runsPerDomain; i++) {
       runRecords.push({
         id: uuidv4(),
         experimentId,
-        domain,
+        domain: domainId,
         runIndex: i,
         explorerProvider: config.explorer.provider,
         explorerModel: config.explorer.model,

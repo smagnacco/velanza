@@ -5,6 +5,9 @@ import { withConcurrencyLimit } from './rate-limit.js';
 import type { LLMProvider, LLMCompletionRequest, LLMCompletionResponse } from './types.js';
 
 const DEFAULT_MODELS = ['claude-opus-4-7', 'claude-sonnet-4-6', 'claude-haiku-4-5'];
+
+// Models that reject the temperature parameter entirely.
+const TEMPERATURE_UNSUPPORTED = new Set(['claude-opus-4-7']);
 const MAX_RETRIES = 2;
 const RETRY_DELAY_MS = 1000;
 
@@ -50,7 +53,7 @@ export const anthropicProvider: LLMProvider = {
           const response = await client.messages.create({
             model,
             max_tokens: req.maxTokens ?? 2048,
-            temperature: req.temperature ?? 1.0,
+            ...(TEMPERATURE_UNSUPPORTED.has(model) ? {} : { temperature: req.temperature ?? 1.0 }),
             system: req.systemPrompt,
             messages: req.messages,
           });

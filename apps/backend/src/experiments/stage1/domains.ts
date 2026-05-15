@@ -92,3 +92,19 @@ export const DEFAULT_DOMAINS: Domain[] = [
 export function getDomainById(id: string): Domain | undefined {
   return DEFAULT_DOMAINS.find((d) => d.id === id);
 }
+
+export function resolveDomain(
+  entry: string | { label: string; seed: string },
+  lang: import('@velanza/shared').Language
+): Domain {
+  if (typeof entry === 'string') {
+    const domain = getDomainById(entry);
+    if (!domain) throw new Error(`Domain not found: ${entry}`);
+    return domain;
+  }
+  return {
+    id: `custom_${entry.label.toLowerCase().replace(/\s+/g, '_').slice(0, 32)}`,
+    label: { es: entry.label, en: entry.label },
+    seed: { es: entry.seed, en: entry.seed },
+  };
+}

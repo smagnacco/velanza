@@ -17,8 +17,15 @@ export const agentConfigSchema = z.object({
   temperature: z.number().min(0).max(2),
 });
 
+export const customDomainSchema = z.object({
+  label: z.string().min(1).max(100),
+  seed: z.string().min(1).max(1000),
+});
+
+export const domainEntrySchema = z.union([z.string().min(1), customDomainSchema]);
+
 export const experimentConfigSchema = z.object({
-  domains: z.array(z.string().min(1)).min(1).max(8),
+  domains: z.array(domainEntrySchema).min(1).max(8),
   runsPerDomain: z.number().int().min(1).max(10),
   language: languageSchema,
   explorer: agentConfigSchema,
