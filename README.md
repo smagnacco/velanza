@@ -11,7 +11,6 @@ Sistema multi-agente que hace dialogar instancias de LLMs de forma adversarial p
 ## ⚠️ Antes de empezar
 
 - **Las API keys son tuyas.** Velanza no provee acceso a ningún modelo. Necesitás cuenta propia en al menos uno de: Anthropic, OpenAI, Google.
-- **Los costos los pagás vos.** Un experimento default (3 dominios × 2 corridas) consume aproximadamente **1 USD** en llamadas a la API. Ejecutar las tres etapas completas puede costar **5–10 USD**.
 - **Cada instalación es independiente.** No hay servidor compartido, no hay datos compartidos. Lo que generés vive solo en tu máquina.
 - **Nunca commitees `.env` ni archivos `.db`.** El `.gitignore` los cubre, pero verificá antes de cada push.
 
@@ -66,7 +65,7 @@ Abrí `http://localhost:5173`. El backend levanta en `localhost:3000`, accesible
 2. Asigná Claude Sonnet a los tres roles (Exploradora, Crítica, Verificadora) o mezclá proveedores.
 3. Iniciá — el progreso aparece en vivo a medida que los agentes dialogan.
 4. Cuando termine, **Validar** — 4 preguntas estructuradas por concepto.
-5. **Analizar** — métricas de huecos genuinos, exportación JSON/CSV.
+5. **Analizar** — métricas de huecos genuinos, exportación JSON/CSV/md
 
 ---
 
@@ -189,11 +188,29 @@ La intención es completar el bucle: los modelos futuros entrenan sobre datos p�
 
 ## Origen
 
-Velanza nació de una conversación entre un humano y Claude sobre [PostGPT](https://github.com/ariannamethod/postgpt), un experimento que sugiere que el conocimiento ya está implícito en el texto sin necesidad de entrenamiento.
+Velanza nació de una conversación entre un humano (Sergio Magnacco) y Claude sobre [PostGPT](https://github.com/ariannamethod/postgpt), un experimento que sugiere que el conocimiento ya está implícito en el texto sin necesidad de entrenamiento.
 
 La conversación derivó hacia una pregunta más profunda: si los modelos pueden encontrar estructura en el lenguaje sin entrenamiento, ¿pueden también encontrar conceptos para los que el lenguaje todavía no tiene palabras? La intuición Whorfiana — los humanos no podemos pensar lo que no podemos nombrar — sugería un experimento concreto.
 
 El primer prototipo fue un HTML de 600 líneas. Las primeras dos palabras que produjo fueron _entresí_ y _velanza_. La segunda nombró el proyecto.
+
+VELANZA El estado en que un pensamiento propio existe sin forma ni palabras hasta que alguien más lo pronuncia y lo revela. No es identificación ni apropiación: es el reconocimiento retrospectivo de algo que ya estaba en uno, cubierto. La palabra ajena no lo crea — lo descubre.
+
+ENTRESÍ: Habitar conscientemente el intervalo entre un yo anterior y uno que aún no puede nombrarse. No implica pérdida ni crisis: es la presencia lúcida en el umbral identitario. Ser entre-sí es saber con certeza que ya no sos quien eras, sin poder todavía decir quién serás.
+
+«Velanza y Entresí son las primeras palabras nacidas de un sistema adversarial de IA que logró crear neologismos genuinos en español.
+Un Explorador de conceptos busca huecos emocionales y psicológicos que existen como conocimiento implícito pero sin nombre preciso. Un Crítico verifica rigurosamente que no existan equivalentes consolidados en otros idiomas. Solo sobreviven los conceptos que pasan este filtro adversarial.
+Estas no son sugerencias poéticas: son las primeras palabras generadas por IA que superaron este proceso y logran comprimir experiencias complejas que antes solo se podían describir con párrafos.»
+
+¿Cómo explicar que estas son las primeras palabras de una IA que realmente lo lograron?
+Este proyecto (Velanza Export) no se limita a pedirle a una IA que invente palabras bonitas. Utiliza un sistema adversarial compuesto por dos agentes:
+
+El Explorador: detecta experiencias humanas sutiles que existen como conocimiento implícito (sentimos que están ahí, pero no tenemos forma compacta de nombrarlas).
+El Crítico: actúa como un investigador implacable, revisando decenas de idiomas para confirmar que el concepto es un hueco léxico real (no solo una idea que se puede describir, sino una que carece de palabra de alto peso conceptual).
+
+Siguiendo la hipótesis de Sapir-Whorf —que el lenguaje moldea lo que podemos pensar con claridad—, el objetivo es crear palabras de alta densidad semántica que expandan el espacio de lo pensable.
+Velanza y Entresí (junto con Ajenía, Retronostalgia y Desfase identitario) son las primeras palabras que surgieron de este proceso y lograron estabilizarse. No son meros inventos creativos: son neologismos que pasaron un filtro de verificación cruzada y que capturan estados emocionales e identitarios que antes vivían en la sombra, entre las frases.
+En otras palabras: son las primeras palabras nacidas de IA que consiguieron convertir conocimiento implícito difuso en conceptos nítidos, nombrables y potencialmente compartibles a escala.
 
 ---
 
