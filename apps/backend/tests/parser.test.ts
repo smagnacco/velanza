@@ -81,6 +81,46 @@ describe('parseConcepts — markdown stripping', () => {
     const result = parseConcepts(text, 'es');
     expect(result[0]?.word).toBe('velanza');
   });
+
+  // BUG 1 regression: orphan asterisks not part of a balanced pair
+  it('strips orphan mid-string asterisk (tú* sí)', () => {
+    const text = `CONCEPTO: velanza\nDEFINICIÓN: Una definición.\nETIMOLOGÍA: La raíz enfatiza que ellos no saben lo que pasó, mientras tú* sí.\nEJEMPLO: Un ejemplo.`;
+    const result = parseConcepts(text, 'es');
+    expect(result[0]?.etymology).toBe(
+      'La raíz enfatiza que ellos no saben lo que pasó, mientras tú sí.'
+    );
+  });
+
+  it('strips orphan trailing asterisks (en espera*, tacitus*,)', () => {
+    const text = `CONCEPTO: velanza\nDEFINICIÓN: Una definición.\nETIMOLOGÍA: Del latín tacitus*, silencio; en espera*.\nEJEMPLO: Un ejemplo.`;
+    const result = parseConcepts(text, 'es');
+    expect(result[0]?.etymology).toBe('Del latín tacitus, silencio; en espera.');
+  });
+
+  it('strips asterisks from word like SUSPENSO** (redefinido)', () => {
+    const text = `CONCEPTO: SUSPENSO** (redefinido)\nDEFINICIÓN: Una definición.\nETIMOLOGÍA: Del latín.\nEJEMPLO: Un ejemplo.`;
+    const result = parseConcepts(text, 'es');
+    expect(result[0]?.word).toBe('SUSPENSO (redefinido)');
+  });
+
+  // BUG 2 regression: Explorer uses "## CONCEPTO N:" header format in round 3
+  it('parses concepts from ## CONCEPTO N: header format (run 94434eee pattern)', () => {
+    const text = `
+## CONCEPTO 1: PRETÉRIDAD
+DEFINICIÓN: La disociación entre reconocimiento físico y continuidad identitaria.
+ETIMOLOGÍA: Del latín praeterita, cosas pasadas.
+EJEMPLO: Ver una foto de hace diez años y no reconocerse.
+
+## CONCEPTO 2: EXOAFIRMACIÓN
+DEFINICIÓN: Necesitar validación externa para sostener la propia identidad.
+ETIMOLOGÍA: Exo- (fuera) + afirmación.
+EJEMPLO: Solo me siento yo mismo cuando otros me describen.
+    `;
+    const result = parseConcepts(text, 'es');
+    expect(result).toHaveLength(2);
+    expect(result[0]?.word).toBe('PRETÉRIDAD');
+    expect(result[1]?.word).toBe('EXOAFIRMACIÓN');
+  });
 });
 
 describe('parseConcepts (en)', () => {
@@ -157,6 +197,70 @@ describe('parseVerdicts — markdown stripping', () => {
     const text = `VEREDICTO: **APROBADO**\nCONCEPTO: velanza\nRAZÓN: Válido.\nESTABILIZADO: SÍ`;
     const result = parseVerdicts(text, 'es');
     expect(result[0]?.verdict).toBe('approved');
+  });
+
+  // Regression test: exact round 4 response from experiment 626d4138, run 59eb0236.
+  // Bug: "**CONCEPTO: DESTIEMPO**" — the opening ** is consumed by the label pattern,
+  // leaving a trailing "DESTIEMPO**" that stripMarkdown didn't clean. The third verdict
+  // (DESTIEMPO, stabilized=true) was being silently dropped.
+  it('strips trailing asterisks left after label bold prefix (regression: destiempo)', () => {
+    const text = `
+**VEREDICTO: APROBADO**
+**CONCEPTO: PREMORACIÓN**
+**RAZÓN:** Válido.
+**ESTABILIZADO: SÍ**
+
+**VEREDICTO: RECHAZADO**
+**CONCEPTO: DILATO**
+**RAZÓN:** Redundante.
+**ESTABILIZADO: NO**
+
+**VEREDICTO: APROBADO**
+**CONCEPTO: DESTIEMPO**
+**RAZÓN:** Nombra experiencia diferenciada.
+**ESTABILIZADO: SÍ**
+    `;
+    const result = parseVerdicts(text, 'es');
+    expect(result).toHaveLength(3);
+    expect(result[0]?.word).toBe('PREMORACIÓN');
+    expect(result[0]?.stabilized).toBe(true);
+    expect(result[1]?.word).toBe('DILATO');
+    expect(result[1]?.stabilized).toBe(false);
+    expect(result[2]?.word).toBe('DESTIEMPO');
+    expect(result[2]?.stabilized).toBe(true);
+  });
+
+  it('word lookup matches across approved/rejected/approved with 3+ concepts', () => {
+    const text = `
+**VEREDICTO: APROBADO**
+**CONCEPTO: ALFA**
+**RAZÓN:** Válido.
+**ESTABILIZADO: SÍ**
+
+**VEREDICTO: RECHAZADO**
+**CONCEPTO: BETA**
+**RAZÓN:** Redundante.
+**ESTABILIZADO: NO**
+
+**VEREDICTO: APROBADO**
+**CONCEPTO: GAMMA**
+**RAZÓN:** Válido.
+**ESTABILIZADO: SÍ**
+
+**VEREDICTO: APROBADO**
+**CONCEPTO: DELTA**
+**RAZÓN:** Válido.
+**ESTABILIZADO: SÍ**
+    `;
+    const result = parseVerdicts(text, 'es');
+    expect(result).toHaveLength(4);
+    const words = result.map((r) => r.word);
+    expect(words).toEqual(['ALFA', 'BETA', 'GAMMA', 'DELTA']);
+    expect(result.filter((r) => r.stabilized).map((r) => r.word)).toEqual([
+      'ALFA',
+      'GAMMA',
+      'DELTA',
+    ]);
   });
 });
 

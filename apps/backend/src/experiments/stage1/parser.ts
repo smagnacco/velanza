@@ -20,8 +20,8 @@ export interface ParsedVerification {
 }
 
 const CONCEPT_PATTERNS: Record<Language, RegExp> = {
-  es: /CONCEPTO:\s*(.+?)(?:\n|$)/gi,
-  en: /CONCEPT:\s*(.+?)(?:\n|$)/gi,
+  es: /^(?:#+\s*|\*{1,2})?CONCEPTO\s*\d*:\s*(.+?)$/gim,
+  en: /^(?:#+\s*|\*{1,2})?CONCEPT\s*\d*:\s*(.+?)$/gim,
 };
 
 const DEFINITION_PATTERNS: Record<Language, RegExp> = {
@@ -40,10 +40,7 @@ const EXAMPLE_PATTERNS: Record<Language, RegExp> = {
 };
 
 function stripMarkdown(text: string): string {
-  return text
-    .replace(/\*\*(.+?)\*\*/g, '$1')
-    .replace(/\*(.+?)\*/g, '$1')
-    .replace(/`(.+?)`/g, '$1');
+  return text.replace(/\*+/g, '').replace(/`+/g, '').replace(/\s+/g, ' ').trim();
 }
 
 function extractAll(pattern: RegExp, text: string): string[] {
@@ -77,8 +74,8 @@ const VERDICT_PATTERNS: Record<Language, RegExp> = {
 };
 
 const VERDICT_CONCEPT_PATTERNS: Record<Language, RegExp> = {
-  es: /CONCEPTO:\s*(.+?)(?:\n|$)/gi,
-  en: /CONCEPT:\s*(.+?)(?:\n|$)/gi,
+  es: /^(?:#+\s*|\*{1,2})?CONCEPTO\s*\d*:\s*(.+?)$/gim,
+  en: /^(?:#+\s*|\*{1,2})?CONCEPT\s*\d*:\s*(.+?)$/gim,
 };
 
 const REASON_PATTERNS: Record<Language, RegExp> = {
