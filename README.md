@@ -203,7 +203,7 @@ Un Explorador de conceptos busca huecos emocionales y psicológicos que existen 
 Estas no son sugerencias poéticas: son las primeras palabras generadas por IA que superaron este proceso y logran comprimir experiencias complejas que antes solo se podían describir con párrafos.»
 
 ¿Cómo explicar que estas son las primeras palabras de una IA que realmente lo lograron?
-Este proyecto (Velanza Export) no se limita a pedirle a una IA que invente palabras bonitas. Utiliza un sistema adversarial compuesto por dos agentes:
+Este proyecto (Velanza) no se limita a pedirle a una IA que invente palabras bonitas. Utiliza un sistema adversarial compuesto por dos agentes:
 
 El Explorador: detecta experiencias humanas sutiles que existen como conocimiento implícito (sentimos que están ahí, pero no tenemos forma compacta de nombrarlas).
 El Crítico: actúa como un investigador implacable, revisando decenas de idiomas para confirmar que el concepto es un hueco léxico real (no solo una idea que se puede describir, sino una que carece de palabra de alto peso conceptual).
